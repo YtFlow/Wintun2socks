@@ -6,7 +6,23 @@
  * will be set to standard values. Override anything you don't like!
  */
 #include "lwip/debug.h"
-
+ /*
+   ------------------------------------
+   -------------- NO SYS --------------
+   ------------------------------------
+*/
+/**
+ * @defgroup lwip_opts_nosys NO_SYS
+ * @ingroup lwip_opts_infrastructure
+ * @{
+ */
+/**
+ * NO_SYS==1: Use lwIP without OS-awareness (no thread, semaphores, mutexes or
+ * mboxes). This means threaded APIs cannot be used (socket, netconn,
+ * i.e. everything in the 'api' folder), only the callback-style raw API is
+ * available (and you have to watch out for yourself that you don't access
+ * lwIP functions/structures from more than one context at a time!)
+ */
 #if !defined NO_SYS || defined __DOXYGEN__
 #define NO_SYS                          1
 #endif
@@ -173,6 +189,10 @@
 /**
  * MEM_SIZE: the size of the heap memory. If the application will send
  * a lot of data that needs to be copied, this should be set high.
+ *
+ * Wintun2socks:
+ * According to tests, setting first HTTP response packet size to be 2900
+ * works just fine.
  */
 #if !defined MEM_SIZE || defined __DOXYGEN__
 #define MEM_SIZE                        1024000
@@ -268,7 +288,7 @@
  * this should be set high.
  */
 #if !defined MEMP_NUM_PBUF || defined __DOXYGEN__
-#define MEMP_NUM_PBUF                   256
+#define MEMP_NUM_PBUF                   16
 #endif
 
 /**
@@ -276,7 +296,7 @@
  * (requires the LWIP_RAW option)
  */
 #if !defined MEMP_NUM_RAW_PCB || defined __DOXYGEN__
-#define MEMP_NUM_RAW_PCB                512
+#define MEMP_NUM_RAW_PCB                64
 #endif
 
 /**
@@ -293,7 +313,7 @@
  * (requires the LWIP_TCP option)
  */
 #if !defined MEMP_NUM_TCP_PCB || defined __DOXYGEN__
-#define MEMP_NUM_TCP_PCB                256
+#define MEMP_NUM_TCP_PCB                64
 #endif
 
 /**
@@ -309,7 +329,7 @@
  * (requires the LWIP_TCP option)
  */
 #if !defined MEMP_NUM_TCP_SEG || defined __DOXYGEN__
-#define MEMP_NUM_TCP_SEG                2048
+#define MEMP_NUM_TCP_SEG                64
 #endif
 
 /**
@@ -317,7 +337,7 @@
  * reassembly (whole packets, not fragments!)
  */
 #if !defined MEMP_NUM_REASSDATA || defined __DOXYGEN__
-#define MEMP_NUM_REASSDATA              20
+#define MEMP_NUM_REASSDATA              5
 #endif
 
 /**
@@ -328,7 +348,7 @@
  * returns.
  */
 #if !defined MEMP_NUM_FRAG_PBUF || defined __DOXYGEN__
-#define MEMP_NUM_FRAG_PBUF              64
+#define MEMP_NUM_FRAG_PBUF              15
 #endif
 
 /**
@@ -414,7 +434,7 @@
  * PBUF_POOL_SIZE: the number of buffers in the pbuf pool.
  */
 #if !defined PBUF_POOL_SIZE || defined __DOXYGEN__
-#define PBUF_POOL_SIZE                  2048
+#define PBUF_POOL_SIZE                  500
 #endif
 
 /** MEMP_NUM_API_MSG: the number of concurrently active calls to various
@@ -461,7 +481,7 @@
  * LWIP_ARP==1: Enable ARP functionality.
  */
 #if !defined LWIP_ARP || defined __DOXYGEN__
-#define LWIP_ARP                        0
+#define LWIP_ARP                        1
 #endif
 
 /**
@@ -624,7 +644,7 @@
  * packets even if the maximum amount of fragments is enqueued for reassembly!
  */
 #if !defined IP_REASS_MAX_PBUFS || defined __DOXYGEN__
-#define IP_REASS_MAX_PBUFS              40
+#define IP_REASS_MAX_PBUFS              10
 #endif
 
 /**
@@ -689,7 +709,7 @@
  * Be careful, disable that make your product non-compliant to RFC1122
  */
 #if !defined LWIP_ICMP || defined __DOXYGEN__
-#define LWIP_ICMP                       1
+#define LWIP_ICMP                       0
 #endif
 
 /**
@@ -730,7 +750,7 @@
  * LWIP_RAW==1: Enable application layer to hook into the IP layer itself.
  */
 #if !defined LWIP_RAW || defined __DOXYGEN__
-#define LWIP_RAW                        1
+#define LWIP_RAW                        0
 #endif
 
 /**
@@ -909,7 +929,7 @@
  * IP_MULTICAST_TTL/IP_MULTICAST_IF/IP_MULTICAST_LOOP
  */
 #if !defined LWIP_MULTICAST_TX_OPTIONS || defined __DOXYGEN__
-#define LWIP_MULTICAST_TX_OPTIONS       0
+#define LWIP_MULTICAST_TX_OPTIONS       (LWIP_IGMP && LWIP_UDP)
 #endif
 /**
  * @}
@@ -1069,7 +1089,7 @@
  * will be TCP_WND >> TCP_RCV_SCALE
  */
 #if !defined TCP_WND || defined __DOXYGEN__
-#define TCP_WND                         (4 * TCP_MSS)
+#define TCP_WND                         0xFFFF
 #endif
 
 /**
@@ -1102,7 +1122,7 @@
  * an upper limit on the MSS advertised by the remote host.
  */
 #if !defined TCP_MSS || defined __DOXYGEN__
-#define TCP_MSS                         2000
+#define TCP_MSS                         1460
 #endif
 
 /**
@@ -1123,7 +1143,7 @@
  * To achieve good performance, this should be at least 2 * TCP_MSS.
  */
 #if !defined TCP_SND_BUF || defined __DOXYGEN__
-#define TCP_SND_BUF                     (20 * TCP_MSS)
+#define TCP_SND_BUF                     (2 * TCP_MSS)
 #endif
 
 /**
@@ -1405,7 +1425,7 @@
  * LWIP_LOOPIF_MULTICAST==1: Support multicast/IGMP on loop interface (127.0.0.1).
  */
 #if !defined LWIP_LOOPIF_MULTICAST || defined __DOXYGEN__
-#define LWIP_LOOPIF_MULTICAST               1
+#define LWIP_LOOPIF_MULTICAST               0
 #endif
 
 /**
@@ -1798,7 +1818,7 @@
  * LWIP_STATS==1: Enable statistics collection in lwip_stats.
  */
 #if !defined LWIP_STATS || defined __DOXYGEN__
-#define LWIP_STATS                      1
+#define LWIP_STATS                      0
 #endif
 
 #if LWIP_STATS
@@ -2030,7 +2050,7 @@
  * CHECKSUM_CHECK_TCP==1: Check checksums in software for incoming TCP packets.
  */
 #if !defined CHECKSUM_CHECK_TCP || defined __DOXYGEN__
-#define CHECKSUM_CHECK_TCP              0
+#define CHECKSUM_CHECK_TCP              1
 #endif
 
 /**
@@ -2557,14 +2577,14 @@
  * NETIF_DEBUG: Enable debugging in netif.c.
  */
 #if !defined NETIF_DEBUG || defined __DOXYGEN__
-#define NETIF_DEBUG                     LWIP_DBG_ON
+#define NETIF_DEBUG                     LWIP_DBG_OFF
 #endif
 
 /**
  * PBUF_DEBUG: Enable debugging in pbuf.c.
  */
 #if !defined PBUF_DEBUG || defined __DOXYGEN__
-#define PBUF_DEBUG                      LWIP_DBG_ON
+#define PBUF_DEBUG                      LWIP_DBG_OFF
 #endif
 
 /**
@@ -2592,35 +2612,35 @@
  * ICMP_DEBUG: Enable debugging in icmp.c.
  */
 #if !defined ICMP_DEBUG || defined __DOXYGEN__
-#define ICMP_DEBUG                      LWIP_DBG_ON
+#define ICMP_DEBUG                      LWIP_DBG_OFF
 #endif
 
 /**
  * IGMP_DEBUG: Enable debugging in igmp.c.
  */
 #if !defined IGMP_DEBUG || defined __DOXYGEN__
-#define IGMP_DEBUG                      LWIP_DBG_ON
+#define IGMP_DEBUG                      LWIP_DBG_OFF
 #endif
 
 /**
  * INET_DEBUG: Enable debugging in inet.c.
  */
 #if !defined INET_DEBUG || defined __DOXYGEN__
-#define INET_DEBUG                      LWIP_DBG_ON
+#define INET_DEBUG                      LWIP_DBG_OFF
 #endif
 
 /**
  * IP_DEBUG: Enable debugging for IP.
  */
 #if !defined IP_DEBUG || defined __DOXYGEN__
-#define IP_DEBUG                        LWIP_DBG_ON
+#define IP_DEBUG                        LWIP_DBG_OFF
 #endif
 
 /**
  * IP_REASS_DEBUG: Enable debugging in ip_frag.c for both frag & reass.
  */
 #if !defined IP_REASS_DEBUG || defined __DOXYGEN__
-#define IP_REASS_DEBUG                  LWIP_DBG_ON
+#define IP_REASS_DEBUG                  LWIP_DBG_OFF
 #endif
 
 /**
@@ -2662,14 +2682,14 @@
  * TCP_DEBUG: Enable debugging for TCP.
  */
 #if !defined TCP_DEBUG || defined __DOXYGEN__
-#define TCP_DEBUG                       LWIP_DBG_ON
+#define TCP_DEBUG                       LWIP_DBG_OFF
 #endif
 
 /**
  * TCP_INPUT_DEBUG: Enable debugging in tcp_in.c for incoming debug.
  */
 #if !defined TCP_INPUT_DEBUG || defined __DOXYGEN__
-#define TCP_INPUT_DEBUG                 LWIP_DBG_ON
+#define TCP_INPUT_DEBUG                 LWIP_DBG_OFF
 #endif
 
 /**
@@ -2705,7 +2725,7 @@
  * TCP_OUTPUT_DEBUG: Enable debugging in tcp_out.c output functions.
  */
 #if !defined TCP_OUTPUT_DEBUG || defined __DOXYGEN__
-#define TCP_OUTPUT_DEBUG                LWIP_DBG_ON
+#define TCP_OUTPUT_DEBUG                LWIP_DBG_OFF
 #endif
 
 /**

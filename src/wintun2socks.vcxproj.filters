@@ -126,7 +126,6 @@
     <ClInclude Include="lwip\lwip\include\arch\epstruct.h" />
     <ClInclude Include="lwip\lwip\include\arch\perf.h" />
     <ClInclude Include="lwip\lwip\include\arch\sys_arch.h" />
-    <ClInclude Include="lwip\lwip\include\lwipopts.h" />
     <ClInclude Include="lwip\lwip\include\lwip\priv\api_msg.h" />
     <ClInclude Include="lwip\lwip\include\lwip\priv\memp_priv.h" />
     <ClInclude Include="lwip\lwip\include\lwip\priv\memp_std.h" />
@@ -182,7 +181,6 @@
     <ClInclude Include="lwip\lwip\include\lwip\netdb.h" />
     <ClInclude Include="lwip\lwip\include\lwip\netif.h" />
     <ClInclude Include="lwip\lwip\include\lwip\netifapi.h" />
-    <ClInclude Include="lwip\lwip\include\lwip\opt.h" />
     <ClInclude Include="lwip\lwip\include\lwip\pbuf.h" />
     <ClInclude Include="lwip\lwip\include\lwip\raw.h" />
     <ClInclude Include="lwip\lwip\include\lwip\sio.h" />
@@ -263,5 +261,7 @@
     <ClInclude Include="Wintun.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="lwipcfg_msvc.h" />
+    <ClInclude Include="lwip\lwip\include\lwipopts.h" />
+    <ClInclude Include="lwip\lwip\include\lwip\opt.h" />
   </ItemGroup>
 </Project>

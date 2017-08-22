@@ -215,7 +215,6 @@
     <ClInclude Include="lwip\lwip\include\arch\epstruct.h" />
     <ClInclude Include="lwip\lwip\include\arch\perf.h" />
     <ClInclude Include="lwip\lwip\include\arch\sys_arch.h" />
-    <ClInclude Include="lwip\lwip\include\lwipopts.h" />
     <ClInclude Include="lwip\lwip\include\lwip\api.h" />
     <ClInclude Include="lwip\lwip\include\lwip\apps\fs.h" />
     <ClInclude Include="lwip\lwip\include\lwip\apps\httpd.h" />
@@ -340,6 +339,7 @@
     <ClInclude Include="lwip\lwip\include\netif\ppp\upap.h" />
     <ClInclude Include="lwip\lwip\include\netif\ppp\vj.h" />
     <ClInclude Include="lwip\lwip\include\netif\slipif.h" />
+    <ClInclude Include="lwip\lwip\include\lwipopts.h" />
     <ClInclude Include="lwip\lwip\include\posix\errno.h" />
     <ClInclude Include="lwip\lwip\include\posix\netdb.h" />
     <ClInclude Include="lwip\lwip\include\posix\sys\socket.h" />
