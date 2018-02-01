@@ -8,7 +8,6 @@ namespace Wintun2socks {
 	PC::UnorderedMap<int, TcpSocket^>^ TcpSocket::m_socketmap = ref new PC::UnorderedMap<int, TcpSocket^>();
 
 	err_t(__stdcall TcpSocket::tcp_recv_func) (void* arg, tcp_pcb *tpcb, pbuf *p, err_t err) {
-		if (p == NULL) return ERR_OK;
 		TcpSocket^ socket;
 		try {
 			socket = TcpSocket::m_socketmap->Lookup(*(int*)arg);
@@ -22,6 +21,11 @@ namespace Wintun2socks {
 		if (!socket) {
 			tcp_abort(tpcb);
 			return ERR_ABRT;
+		}
+		if (p == NULL) {
+			auto arr = ref new Platform::Array<uint8, 1>(0);
+			socket->DataReceived(socket, arr);
+			return ERR_OK;
 		}
 		auto arr = ref new Platform::Array<uint8, 1>(p->tot_len);
 		pbuf_copy_partial(p, arr->begin(), p->tot_len, 0);
@@ -79,8 +83,8 @@ namespace Wintun2socks {
 		tcp_sent(tpcb, (tcp_sent_fn)&tcp_sent_func);
 		tcp_err(tpcb, (tcp_err_fn)&tcp_err_func);
 
-		RemoteAddr = tpcb->remote_ip.addr;
-		RemotePort = tpcb->remote_port;
+		RemoteAddr = tpcb->local_ip.addr;
+		RemotePort = tpcb->local_port;
 
 		TcpSocket::m_socketmap->Insert(*arg, this);
 	}
@@ -88,6 +92,9 @@ namespace Wintun2socks {
 	uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet)
 	{
 		auto ret = tcp_write(m_tcpb, packet->begin(), packet->Length, TCP_WRITE_FLAG_COPY);
+		if (ret == ERR_MEM) {
+			return ERR_MEM;
+		}
 		if (ret == ERR_OK) {
 			return tcp_output(m_tcpb);
 		}
