@@ -603,22 +603,16 @@ pbuf_header_impl(struct pbuf *p, s16_t header_size_increment, u8_t force)
   if (type == PBUF_RAM || type == PBUF_POOL) {
     /* set new payload pointer */
     p->payload = (u8_t *)p->payload - header_size_increment;
-	/**
-	 * Wintun2socks:
-	 * Boundary check is unnecessary and must fail
-	 * because our payload is injected from WinRT
-	 * and we did not copy it to the space after pbuf struct
-	 */
     /* boundary check fails? */
-    //if ((u8_t *)p->payload < (u8_t *)p + SIZEOF_STRUCT_PBUF) {
-    //  LWIP_DEBUGF( PBUF_DEBUG | LWIP_DBG_TRACE,
-    //    ("pbuf_header: failed as %p < %p (not enough space for new header size)\n",
-    //    (void *)p->payload, (void *)((u8_t *)p + SIZEOF_STRUCT_PBUF)));
-    //  /* restore old payload pointer */
-    //  p->payload = payload;
-    //  /* bail out unsuccessfully */
-    //  return 1;
-    //}
+    if ((u8_t *)p->payload < (u8_t *)p + SIZEOF_STRUCT_PBUF) {
+      LWIP_DEBUGF( PBUF_DEBUG | LWIP_DBG_TRACE,
+        ("pbuf_header: failed as %p < %p (not enough space for new header size)\n",
+        (void *)p->payload, (void *)((u8_t *)p + SIZEOF_STRUCT_PBUF)));
+      /* restore old payload pointer */
+      p->payload = payload;
+      /* bail out unsuccessfully */
+      return 1;
+    }
   /* pbuf types referring to external payloads? */
   } else if (type == PBUF_REF || type == PBUF_ROM) {
     /* hide a header in the payload? */

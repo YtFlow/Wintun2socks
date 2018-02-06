@@ -612,20 +612,21 @@ udp_sendto_if_chksum(struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *dst_i
   /* PCB local address is IP_ANY_ADDR? */
 #if LWIP_IPV6
   if (IP_IS_V6(dst_ip)) {
-    if (ip6_addr_isany(ip_2_ip6(&pcb->local_ip))) {
-      src_ip = ip6_select_source_address(netif, ip_2_ip6(dst_ip));
-      if (src_ip == NULL) {
-        /* No suitable source address was found. */
-        return ERR_RTE;
-      }
-    } else {
-      /* use UDP PCB local IPv6 address as source address, if still valid. */
-      if (netif_get_ip6_addr_match(netif, ip_2_ip6(&pcb->local_ip)) < 0) {
-        /* Address isn't valid anymore. */
-        return ERR_RTE;
-      }
-      src_ip = &pcb->local_ip;
-    }
+	  if (ip6_addr_isany(ip_2_ip6(&pcb->local_ip))) {
+		  src_ip = ip6_select_source_address(netif, ip_2_ip6(dst_ip));
+		  if (src_ip == NULL) {
+			  /* No suitable source address was found. */
+			  return ERR_RTE;
+		  }
+	  }
+	  else {
+		  /* use UDP PCB local IPv6 address as source address, if still valid. */
+		  if (netif_get_ip6_addr_match(netif, ip_2_ip6(&pcb->local_ip)) < 0) {
+			  /* Address isn't valid anymore. */
+			  return ERR_RTE;
+		  }
+		  src_ip = &pcb->local_ip;
+	  }
   }
 #endif /* LWIP_IPV6 */
 #if LWIP_IPV4 && LWIP_IPV6

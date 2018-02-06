@@ -1030,7 +1030,7 @@
  * LWIP_UDP==1: Turn on UDP.
  */
 #if !defined LWIP_UDP || defined __DOXYGEN__
-#define LWIP_UDP                        0
+#define LWIP_UDP                        1
 #endif
 
 /**
@@ -1143,7 +1143,7 @@
  * To achieve good performance, this should be at least 2 * TCP_MSS.
  */
 #if !defined TCP_SND_BUF || defined __DOXYGEN__
-#define TCP_SND_BUF                     (2 * TCP_MSS)
+#define TCP_SND_BUF                     (8 * TCP_MSS)
 #endif
 
 /**
@@ -1219,7 +1219,7 @@
  * TCP_MSS/4: Try to create 4 fragments or less per TCP packet.
  */
 #if !defined TCP_OVERSIZE || defined __DOXYGEN__
-#define TCP_OVERSIZE                    TCP_MSS
+#define TCP_OVERSIZE                    /*TCP_MSS*/ 0
 #endif
 
 /**
