@@ -10,7 +10,7 @@ namespace Wintun2socks {
 	err_t(__stdcall TcpSocket::tcp_recv_func) (void* arg, tcp_pcb *tpcb, pbuf *p, err_t err) {
 		TcpSocket^ socket;
 		try {
-			socket = TcpSocket::m_socketmap->Lookup(*(int*)arg);
+			socket = TcpSocket::m_socketmap->Lookup((int)arg);
 			;
 		}
 		catch (Platform::OutOfBoundsException^) {
@@ -41,7 +41,7 @@ namespace Wintun2socks {
 		}
 		TcpSocket^ socket;
 		try {
-			socket = TcpSocket::m_socketmap->Lookup(*(int*)arg);
+			socket = TcpSocket::m_socketmap->Lookup((int)arg);
 		}
 		catch (Platform::OutOfBoundsException^) {
 			tcp_abort(tpcb);
@@ -64,7 +64,7 @@ namespace Wintun2socks {
 		if (arg == NULL) return ERR_OK;
 		TcpSocket^ socket;
 		try {
-			socket = TcpSocket::m_socketmap->Lookup(*(int*)arg);
+			socket = TcpSocket::m_socketmap->Lookup((int)arg);
 		}
 		catch (Platform::OutOfBoundsException^) {
 			return ERR_ABRT;
@@ -76,9 +76,10 @@ namespace Wintun2socks {
 	TcpSocket::TcpSocket(tcp_pcb *tpcb)
 	{
 		m_tcpb = tpcb;
-		auto arg = (int*)malloc(sizeof(int));
-		*arg = Random::Getone();
-		tcp_arg(tpcb, arg);
+		// Keep the last bit 1
+		// 0 indicates the tcpb has been freed
+		int arg = Random::Getone() | 0x1;
+		tcp_arg(tpcb, (void*)arg);
 		tcp_recv(tpcb, (tcp_recv_fn)&tcp_recv_func);
 		tcp_sent(tpcb, (tcp_sent_fn)&tcp_sent_func);
 		tcp_err(tpcb, (tcp_err_fn)&tcp_err_func);
@@ -86,13 +87,14 @@ namespace Wintun2socks {
 		RemoteAddr = tpcb->local_ip.addr;
 		RemotePort = tpcb->local_port;
 
-		TcpSocket::m_socketmap->Insert(*arg, this);
+		TcpSocket::m_socketmap->Insert(arg, this);
 	}
 
 	uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet)
 	{
 		auto ret = tcp_write(m_tcpb, packet->begin(), packet->Length, TCP_WRITE_FLAG_COPY);
-		if (ret == ERR_MEM) {
+		return ret;
+		/*if (ret == ERR_MEM) {
 			return ERR_MEM;
 		}
 		if (ret == ERR_OK) {
@@ -100,26 +102,41 @@ namespace Wintun2socks {
 		}
 		else {
 			return this->Close();
-		}
+		} */
+	}
+	uint8 TcpSocket::Output() {
+		auto ret = tcp_output(m_tcpb);
+		return ret;
+	}
+	uint8 TcpSocket::Send(Windows::Storage::Streams::Buffer^ packet)
+	{
+		throw ref new Platform::NotImplementedException(L"To be implemented");
 	}
 	uint8 TcpSocket::Close()
 	{
 		if (m_released) return -1;
 		m_released = true;
-		int* arg = (int*)m_tcpb->callback_arg;
-		if (arg == NULL) return ERR_CLSD;
 		try {
-			TcpSocket::m_socketmap->Remove(*(int*)arg);
-			free(arg);
+			TcpSocket::m_socketmap->Remove((int)(m_tcpb -> callback_arg));
 		}
 		catch (Platform::OutOfBoundsException^) {
 			;
 		}
-		tcp_arg(m_tcpb, NULL);
+		// tcp_arg(m_tcpb, NULL);
 		tcp_recv(m_tcpb, NULL);
 		tcp_sent(m_tcpb, NULL);
 		tcp_err(m_tcpb, NULL);
-		return tcp_close(m_tcpb);
+		uint8 ret;
+		if (m_tcpb->local_port == 0) {
+			// Already closed
+			// ret = tcp_close(m_tcpb);
+			// tcp_abort(m_tcpb);
+			ret = ERR_OK;
+		}
+		else {
+			ret = tcp_close(m_tcpb);
+		}
+		return ret;
 	}
 	void TcpSocket::Abort()
 	{
@@ -128,7 +145,7 @@ namespace Wintun2socks {
 		int* arg = (int*)m_tcpb->callback_arg;
 		if (arg == NULL) return;
 		try {
-			TcpSocket::m_socketmap->Remove(*(int*)arg);
+			TcpSocket::m_socketmap->Remove((int)arg);
 			free(arg);
 		}
 		catch (Platform::OutOfBoundsException^) {

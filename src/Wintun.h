@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "lwip\init.h"
+#include "lwip\timeouts.h"
 #include "lwip\tcp.h"
 #include "lwip\udp.h"
 #include "pch.h"
@@ -15,6 +16,7 @@ namespace Wintun2socks {
 		event PacketPopedHandler^ PacketPoped;
 		event DnsPacketPopedHandler^ DnsPacketPoped;
 		void Init();
+		void CheckTimeout();
 		uint8 PushDnsPayload(u32_t addr, uint16 port, const Platform::Array<uint8, 1>^ packet);
 		uint8 PushPacket(const Platform::Array<uint8, 1u>^ packet);
 	};
@@ -33,6 +35,7 @@ namespace Wintun2socks {
 	public:
 		static property Wintun^ Instance { Wintun^ get(); };
 		virtual void Init();
+		virtual void CheckTimeout();
 		virtual uint8 PushPacket(const Platform::Array<uint8, 1u>^ packet);
 		virtual uint8 PushDnsPayload(u32_t addr, uint16 port, const Platform::Array<uint8, 1>^ packet);
 		virtual event PacketPopedHandler^ PacketPoped;

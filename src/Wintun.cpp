@@ -8,6 +8,7 @@ namespace Wintun2socks {
 	udp_pcb* Wintun::m_dnsPCB;
 	err_t(__stdcall Wintun::outputPCB) (struct netif *netif, struct pbuf *p,
 		const ip4_addr_t *ipaddr) {
+		if (p == NULL) return ERR_OK;
 		auto arr = ref new Platform::Array<uint8, 1u>(p->tot_len);
 		pbuf_copy_partial(p, arr->begin(), p->tot_len, 0);
 		m_instance->PacketPoped(m_instance, arr);
@@ -45,6 +46,11 @@ namespace Wintun2socks {
 		udp_recv(m_dnsPCB, (udp_recv_fn)&Wintun::recvUdp, NULL);
 	}
 
+	void Wintun::CheckTimeout()
+	{
+		sys_check_timeouts();
+	}
+
 	Wintun^ Wintun::Instance::get() {
 		return Wintun::m_instance;
 	}
@@ -61,16 +67,16 @@ namespace Wintun2socks {
 		}
 		memcpy_s(p->payload, packet->Length, packet->Data, packet->Length);
 		auto iphdr = (const struct ip_hdr *)p->payload;
-		return m_interface->input(p, m_interface);
-
+		auto ret = m_interface->input(p, m_interface);
+		return ret;
 	}
-
 	uint8 Wintun::PushDnsPayload(u32_t addr, uint16 port, const Platform::Array<uint8, 1>^ packet)
 	{
 		auto p = pbuf_alloc(PBUF_RAW, packet->Length, PBUF_RAM);
 		memcpy_s(p->payload, packet->Length, packet->Data, packet->Length);
 		ip_addr_t ip_dest = { addr };
 		ip_addr_t ip_src = { 0x01010101 };
-		return udp_sendto_if_src(m_dnsPCB, p, &ip_dest, port, m_interface, &ip_src);
+		auto ret = udp_sendto_if_src(m_dnsPCB, p, &ip_dest, port, m_interface, &ip_src);
+		return ret;
 	}
 }
