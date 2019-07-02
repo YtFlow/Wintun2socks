@@ -4,6 +4,11 @@
 #include "lwip\tcp.h"
 #include "Random.h"
 #include <collection.h>
+#include <wrl.h>
+#include <robuffer.h>
+
+using namespace Windows::Storage::Streams;
+using namespace Microsoft::WRL;
 
 namespace WFM = Windows::Foundation::Metadata;
 
@@ -34,8 +39,9 @@ namespace Wintun2socks {
 	public:
 		property u32_t TcpSocket::RemoteAddr;
 		property u16_t TcpSocket::RemotePort;
-		uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet);
-		uint8 TcpSocket::Send(Windows::Storage::Streams::Buffer^ packet);
+		uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet, bool flag);
+		uint8 TcpSocket::Send(Windows::Storage::Streams::Buffer^ packet, bool flag);
+		void TcpSocket::Recved(u16_t len);
 		uint8 TcpSocket::Output();
 		uint8 TcpSocket::Close();
 		void TcpSocket::Abort();

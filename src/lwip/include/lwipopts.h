@@ -1086,8 +1086,7 @@
  * will be TCP_WND >> TCP_RCV_SCALE
  */
 #if !defined TCP_WND || defined __DOXYGEN__
-#define TCP_WND                         0xFFFF
-#endif
+#define TCP_WND                         (8 * TCP_MSS)
 
 /**
  * TCP_MAXRTX: Maximum number of retransmissions of data segments.
@@ -1265,8 +1264,8 @@
  * send window while having a small receive window only.
  */
 #if !defined LWIP_WND_SCALE || defined __DOXYGEN__
-#define LWIP_WND_SCALE                  0
-#define TCP_RCV_SCALE                   0
+#define LWIP_WND_SCALE                  1
+#define TCP_RCV_SCALE                   2
 #endif
 /**
  * @}
@@ -2813,3 +2812,4 @@
  */
 
 #endif /* LWIP_HDR_OPT_H */
+#endif

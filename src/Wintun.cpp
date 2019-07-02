@@ -65,14 +65,13 @@ namespace Wintun2socks {
 			// Drop it
 			return 1;
 		}
-		memcpy_s(p->payload, packet->Length, packet->Data, packet->Length);
-		auto iphdr = (const struct ip_hdr *)p->payload;
+		memcpy_s(p->payload, p->len, packet->Data, packet->Length);
 		auto ret = m_interface->input(p, m_interface);
 		return ret;
 	}
 	uint8 Wintun::PushDnsPayload(u32_t addr, uint16 port, const Platform::Array<uint8, 1>^ packet)
 	{
-		auto p = pbuf_alloc(PBUF_RAW, packet->Length, PBUF_RAM);
+		auto p = pbuf_alloc(PBUF_TRANSPORT, packet->Length, PBUF_RAM);
 		memcpy_s(p->payload, packet->Length, packet->Data, packet->Length);
 		ip_addr_t ip_dest = { addr };
 		ip_addr_t ip_src = { 0x01010101 };

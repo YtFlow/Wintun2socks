@@ -90,34 +90,47 @@ namespace Wintun2socks {
 		TcpSocket::m_socketmap->Insert(arg, this);
 	}
 
-	uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet)
+	uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet, bool more)
 	{
-		auto ret = tcp_write(m_tcpb, packet->begin(), packet->Length, TCP_WRITE_FLAG_COPY);
-		return ret;
-		/*if (ret == ERR_MEM) {
-			return ERR_MEM;
+		auto flag = TCP_WRITE_FLAG_COPY;
+		if (more) {
+			flag |= TCP_WRITE_FLAG_MORE;
 		}
+		auto ret = tcp_write(m_tcpb, packet->begin(), packet->Length, flag);
 		if (ret == ERR_OK) {
 			return tcp_output(m_tcpb);
 		}
-		else {
-			return this->Close();
-		} */
+		else return ret;
+	}
+	void TcpSocket::Recved(u16_t len) {
+		tcp_recved(m_tcpb, len);
 	}
 	uint8 TcpSocket::Output() {
 		auto ret = tcp_output(m_tcpb);
 		return ret;
 	}
-	uint8 TcpSocket::Send(Windows::Storage::Streams::Buffer^ packet)
+	uint8 TcpSocket::Send(Windows::Storage::Streams::Buffer^ packet, bool more)
 	{
-		throw ref new Platform::NotImplementedException(L"To be implemented");
+		ComPtr<IBufferByteAccess> bufferByteAccess;
+		reinterpret_cast<IInspectable*>(packet)->QueryInterface(IID_PPV_ARGS(&bufferByteAccess));
+		byte* data = nullptr;
+		bufferByteAccess->Buffer(&data);
+		auto flag = TCP_WRITE_FLAG_COPY;
+		if (more) {
+			flag |= TCP_WRITE_FLAG_MORE;
+		}
+		auto ret = tcp_write(m_tcpb, data, packet->Length, flag);
+		if (ret == ERR_OK) {
+			return tcp_output(m_tcpb);
+		}
+		else return ret;
 	}
 	uint8 TcpSocket::Close()
 	{
 		if (m_released) return -1;
 		m_released = true;
 		try {
-			TcpSocket::m_socketmap->Remove((int)(m_tcpb -> callback_arg));
+			TcpSocket::m_socketmap->Remove((int)(m_tcpb->callback_arg));
 		}
 		catch (Platform::OutOfBoundsException^) {
 			;
@@ -142,11 +155,9 @@ namespace Wintun2socks {
 	{
 		if (m_released) return;
 		m_released = true;
-		int* arg = (int*)m_tcpb->callback_arg;
-		if (arg == NULL) return;
+		int arg = (int)m_tcpb->callback_arg;
 		try {
 			TcpSocket::m_socketmap->Remove((int)arg);
-			free(arg);
 		}
 		catch (Platform::OutOfBoundsException^) {
 			;
