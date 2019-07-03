@@ -16,6 +16,7 @@ namespace Wintun2socks {
 		event PacketPopedHandler^ PacketPoped;
 		event DnsPacketPopedHandler^ DnsPacketPoped;
 		void Init();
+		void Deinit();
 		void CheckTimeout();
 		uint8 PushDnsPayload(u32_t addr, uint16 port, const Platform::Array<uint8, 1>^ packet);
 		uint8 PushPacket(const Platform::Array<uint8, 1u>^ packet);
@@ -23,6 +24,7 @@ namespace Wintun2socks {
 	public ref class Wintun sealed: [WFM::DefaultAttribute] IWintun
 	{
 	private:
+		static bool running;
 		static Wintun^ m_instance;
 		static netif* m_interface;
 		static tcp_pcb* m_listenPCB;
@@ -35,6 +37,7 @@ namespace Wintun2socks {
 	public:
 		static property Wintun^ Instance { Wintun^ get(); };
 		virtual void Init();
+		virtual void Deinit();
 		virtual void CheckTimeout();
 		virtual uint8 PushPacket(const Platform::Array<uint8, 1u>^ packet);
 		virtual uint8 PushDnsPayload(u32_t addr, uint16 port, const Platform::Array<uint8, 1>^ packet);

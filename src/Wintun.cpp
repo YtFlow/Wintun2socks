@@ -6,6 +6,7 @@ namespace Wintun2socks {
 	netif* Wintun::m_interface = netif_default;
 	tcp_pcb* Wintun::m_listenPCB;
 	udp_pcb* Wintun::m_dnsPCB;
+	bool Wintun::running = false;
 	err_t(__stdcall Wintun::outputPCB) (struct netif *netif, struct pbuf *p,
 		const ip4_addr_t *ipaddr) {
 		if (p == NULL) return ERR_OK;
@@ -25,6 +26,10 @@ namespace Wintun2socks {
 	}
 
 	void Wintun::Init() {
+		if (running) {
+			return;
+		}
+		running = true;
 		lwip_init();
 
 		// add a listening pcb for TCP
@@ -44,6 +49,10 @@ namespace Wintun2socks {
 		dns_ip.addr = 0x01010101;
 		udp_bind(m_dnsPCB, &dns_ip, 53);
 		udp_recv(m_dnsPCB, (udp_recv_fn)&Wintun::recvUdp, NULL);
+	}
+
+	void Wintun::Deinit() {
+		TcpSocket::Deinit();
 	}
 
 	void Wintun::CheckTimeout()

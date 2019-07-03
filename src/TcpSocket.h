@@ -39,6 +39,7 @@ namespace Wintun2socks {
 	public:
 		property u32_t TcpSocket::RemoteAddr;
 		property u16_t TcpSocket::RemotePort;
+		static void Deinit();
 		uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet, bool flag);
 		uint8 TcpSocket::Send(Windows::Storage::Streams::Buffer^ packet, bool flag);
 		void TcpSocket::Recved(u16_t len);

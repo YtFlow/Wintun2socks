@@ -89,6 +89,9 @@ namespace Wintun2socks {
 
 		TcpSocket::m_socketmap->Insert(arg, this);
 	}
+	void TcpSocket::Deinit() {
+		m_socketmap->Clear();
+	}
 
 	uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet, bool more)
 	{
