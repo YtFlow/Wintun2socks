@@ -183,7 +183,7 @@
  *    2 byte alignment -> \#define MEM_ALIGNMENT 2
  */
 #if !defined MEM_ALIGNMENT || defined __DOXYGEN__
-#define MEM_ALIGNMENT                   1
+#define MEM_ALIGNMENT                   4
 #endif
 
 /**

@@ -286,6 +286,7 @@
     <ClInclude Include="lwip\include\lwip\tcpip.h" />
     <ClInclude Include="lwip\include\lwip\timeouts.h" />
     <ClInclude Include="lwip\include\lwip\udp.h" />
+    <ClInclude Include="NativeBuffer.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="TcpSocket.h" />
     <ClInclude Include="Wintun.h" />

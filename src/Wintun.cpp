@@ -1,5 +1,8 @@
 ﻿#include "Wintun.h"
 #include <string>
+#include <ppltasks.h>
+
+using namespace concurrency;
 
 namespace Wintun2socks {
 	Wintun^ Wintun::m_instance = ref new Wintun();
@@ -7,12 +10,19 @@ namespace Wintun2socks {
 	tcp_pcb* Wintun::m_listenPCB;
 	udp_pcb* Wintun::m_dnsPCB;
 	bool Wintun::running = false;
+	WNS::DatagramSocket^ Wintun::m_outputSocket;
 	err_t(__stdcall Wintun::outputPCB) (struct netif *netif, struct pbuf *p,
 		const ip4_addr_t *ipaddr) {
 		if (p == NULL) return ERR_OK;
-		auto arr = ref new Platform::Array<uint8, 1u>(p->tot_len);
-		pbuf_copy_partial(p, arr->begin(), p->tot_len, 0);
-		m_instance->PacketPoped(m_instance, arr);
+		u8_t *data = (u8_t *)malloc(p->tot_len);
+		pbuf_copy_partial(p, data, p->tot_len, 0);
+		IBuffer ^buf = NativeBuffer::CreateNativeBuffer(data, p->tot_len);
+		try {
+			m_outputSocket->OutputStream->WriteAsync(buf);
+		}
+		catch (Platform::Exception^) {
+			;
+		}
 		return ERR_OK;
 	}
 
@@ -25,7 +35,8 @@ namespace Wintun2socks {
 		return ERR_OK;
 	}
 
-	void Wintun::Init() {
+	void Wintun::Init(WNS::DatagramSocket^ outputSocket) {
+		m_outputSocket = outputSocket;
 		if (running) {
 			return;
 		}

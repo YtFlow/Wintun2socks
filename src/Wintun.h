@@ -5,8 +5,10 @@
 #include "lwip\udp.h"
 #include "pch.h"
 #include "TcpSocket.h"
+#include "NativeBuffer.h"
 
 namespace WFM = Windows::Foundation::Metadata;
+namespace WNS = Windows::Networking::Sockets;
 
 namespace Wintun2socks {
 	public delegate void PacketPopedHandler(Platform::Object^ sender, const Platform::Array<uint8, 1>^ e);
@@ -15,7 +17,7 @@ namespace Wintun2socks {
 	public interface class IWintun {
 		event PacketPopedHandler^ PacketPoped;
 		event DnsPacketPopedHandler^ DnsPacketPoped;
-		void Init();
+		void Init(WNS::DatagramSocket^ outputSocket);
 		void Deinit();
 		void CheckTimeout();
 		uint8 PushDnsPayload(u32_t addr, uint16 port, const Platform::Array<uint8, 1>^ packet);
@@ -29,6 +31,7 @@ namespace Wintun2socks {
 		static netif* m_interface;
 		static tcp_pcb* m_listenPCB;
 		static udp_pcb* m_dnsPCB;
+		static WNS::DatagramSocket^ m_outputSocket;
 		static err_t(__stdcall Wintun::outputPCB) (struct netif *netif, struct pbuf *p,
 			const ip4_addr_t *ipaddr);
 		static err_t(__stdcall Wintun::recvUdp) (void *arg, struct udp_pcb *pcb, struct pbuf *p,
@@ -36,7 +39,7 @@ namespace Wintun2socks {
 
 	public:
 		static property Wintun^ Instance { Wintun^ get(); };
-		virtual void Init();
+		virtual void Init(WNS::DatagramSocket^ outputSocket);
 		virtual void Deinit();
 		virtual void CheckTimeout();
 		virtual uint8 PushPacket(const Platform::Array<uint8, 1u>^ packet);

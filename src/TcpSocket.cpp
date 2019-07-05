@@ -14,7 +14,9 @@ namespace Wintun2socks {
 			;
 		}
 		catch (Platform::OutOfBoundsException^) {
-			pbuf_free(p);
+			if (p != NULL) {
+				pbuf_free(p);
+			}
 			tcp_abort(tpcb);
 			return ERR_ABRT;
 		}
@@ -177,5 +179,8 @@ namespace Wintun2socks {
 	}
 	unsigned int TcpSocket::ConnectionCount() {
 		return m_socketmap->Size;
+	}
+	u16_t TcpSocket::SendBufferSize::get() {
+		return tcp_sndbuf(m_tcpb);
 	}
 }
