@@ -10,19 +10,20 @@ namespace Wintun2socks {
 	tcp_pcb* Wintun::m_listenPCB;
 	udp_pcb* Wintun::m_dnsPCB;
 	bool Wintun::running = false;
-	WNS::DatagramSocket^ Wintun::m_outputSocket;
 	err_t(__stdcall Wintun::outputPCB) (struct netif *netif, struct pbuf *p,
 		const ip4_addr_t *ipaddr) {
 		if (p == NULL) return ERR_OK;
-		u8_t *data = (u8_t *)malloc(p->tot_len);
-		pbuf_copy_partial(p, data, p->tot_len, 0);
-		IBuffer ^buf = NativeBuffer::CreateNativeBuffer(data, p->tot_len);
-		try {
-			m_outputSocket->OutputStream->WriteAsync(buf);
-		}
-		catch (Platform::Exception^) {
-			;
-		}
+		// u8_t *data = (u8_t *)malloc(p->tot_len);
+		auto arr = ref new Platform::Array<byte, 1>(p->tot_len);
+		pbuf_copy_partial(p, arr->Data, p->tot_len, 0);
+		m_instance->PacketPoped(m_instance, arr);
+		// IBuffer ^buf = NativeBuffer::CreateNativeBuffer(data, p->tot_len);
+		// try {
+		// 	m_outputSocket->OutputStream->WriteAsync(buf);
+		// }
+		// catch (Platform::Exception^) {
+		// 	;
+		// }
 		return ERR_OK;
 	}
 
@@ -35,8 +36,7 @@ namespace Wintun2socks {
 		return ERR_OK;
 	}
 
-	void Wintun::Init(WNS::DatagramSocket^ outputSocket) {
-		m_outputSocket = outputSocket;
+	void Wintun::Init() {
 		if (running) {
 			return;
 		}
