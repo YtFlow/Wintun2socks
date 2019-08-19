@@ -37,9 +37,18 @@
 #pragma warning (disable: 4996) /* 'strncpy' was declared deprecated */
 #pragma warning (disable: 4103) /* structure packing changed by including file */
 #pragma warning (disable: 4820) /* 'x' bytes padding added after data member 'y' */
+#pragma warning (disable: 4711) /* The compiler performed inlining on the given function, although it was not marked for inlining */
 #endif
 
-#define LWIP_PROVIDE_ERRNO
+#ifdef _MSC_VER
+#if _MSC_VER >= 1910
+#include <errno.h> /* use MSVC errno for >= 2017 */
+#else
+#define LWIP_PROVIDE_ERRNO /* provide errno for MSVC pre-2017 */
+#endif
+#else /* _MSC_VER */
+#define LWIP_PROVIDE_ERRNO /* provide errno for non-MSVC */
+#endif /* _MSC_VER */
 
 /* Define platform endianness (might already be defined) */
 #ifndef BYTE_ORDER
@@ -78,13 +87,24 @@ typedef int sys_prot_t;
 
 #ifdef _MSC_VER
 /* C runtime functions redefined */
-/**
- * Wintun2socks:
- *
- * Redefined snprintf not supported
- */
-// #define snprintf _snprintf
+#if _MSC_VER < 1910
+#define snprintf _snprintf
+#endif
 #define strdup   _strdup
+#endif
+
+/* Define an example for LWIP_PLATFORM_DIAG: since this uses varargs and the old
+ * C standard lwIP targets does not support this in macros, we have extra brackets
+ * around the arguments, which are left out in the following macro definition:
+ */
+#if !defined(LWIP_TESTMODE) || !LWIP_TESTMODE
+void lwip_win32_platform_diag(const char *format, ...);
+#define LWIP_PLATFORM_DIAG(x) lwip_win32_platform_diag x
+#endif
+
+#ifndef LWIP_NORAND
+extern unsigned int sys_win_rand(void);
+#define LWIP_RAND() (sys_win_rand())
 #endif
 
 #define PPP_INCLUDE_SETTINGS_HEADER

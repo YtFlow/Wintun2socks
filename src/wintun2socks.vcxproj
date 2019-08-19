@@ -217,7 +217,6 @@
   <ItemGroup>
     <ClInclude Include="lwipcfg_msvc.h" />
     <ClInclude Include="lwip\include\arch\bpstruct.h" />
-    <ClInclude Include="lwip\include\lwipopts.h" />
     <ClInclude Include="lwip\include\lwip\api.h" />
     <ClInclude Include="lwip\include\lwip\arch.h" />
     <ClInclude Include="lwip\include\lwip\arch\bpstruct.h" />
@@ -295,52 +294,171 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="lwip\core\def.c" />
-    <ClCompile Include="lwip\core\dns.c" />
-    <ClCompile Include="lwip\core\inet_chksum.c" />
-    <ClCompile Include="lwip\core\init.c" />
-    <ClCompile Include="lwip\core\ip.c" />
-    <ClCompile Include="lwip\core\ipv4\autoip.c" />
-    <ClCompile Include="lwip\core\ipv4\dhcp.c" />
-    <ClCompile Include="lwip\core\ipv4\etharp.c" />
-    <ClCompile Include="lwip\core\ipv4\icmp.c" />
-    <ClCompile Include="lwip\core\ipv4\igmp.c" />
-    <ClCompile Include="lwip\core\ipv4\ip4.c" />
-    <ClCompile Include="lwip\core\ipv4\ip4_addr.c" />
-    <ClCompile Include="lwip\core\ipv4\ip4_frag.c" />
-    <ClCompile Include="lwip\core\ipv6\dhcp6.c" />
-    <ClCompile Include="lwip\core\ipv6\ethip6.c" />
-    <ClCompile Include="lwip\core\ipv6\icmp6.c" />
-    <ClCompile Include="lwip\core\ipv6\inet6.c" />
-    <ClCompile Include="lwip\core\ipv6\ip6.c" />
-    <ClCompile Include="lwip\core\ipv6\ip6_addr.c" />
-    <ClCompile Include="lwip\core\ipv6\ip6_frag.c" />
-    <ClCompile Include="lwip\core\ipv6\mld6.c" />
-    <ClCompile Include="lwip\core\ipv6\nd6.c" />
-    <ClCompile Include="lwip\core\mem.c" />
-    <ClCompile Include="lwip\core\memp.c" />
-    <ClCompile Include="lwip\core\netif.c" />
-    <ClCompile Include="lwip\core\pbuf.c" />
-    <ClCompile Include="lwip\core\raw.c" />
-    <ClCompile Include="lwip\core\stats.c" />
-    <ClCompile Include="lwip\core\sys.c" />
-    <ClCompile Include="lwip\core\tcp.c" />
-    <ClCompile Include="lwip\core\tcp_in.c" />
-    <ClCompile Include="lwip\core\tcp_out.c" />
-    <ClCompile Include="lwip\core\timeouts.c" />
-    <ClCompile Include="lwip\core\udp.c" />
+    <ClCompile Include="lwip\core\def.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\dns.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\inet_chksum.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\init.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ip.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv4\autoip.c">
+      <CompileAsManaged>
+      </CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv4\dhcp.c">
+      <CompileAsManaged>
+      </CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv4\etharp.c">
+      <CompileAsManaged>
+      </CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv4\icmp.c">
+      <CompileAsManaged>
+      </CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv4\igmp.c">
+      <CompileAsManaged>
+      </CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv4\ip4.c">
+      <CompileAsManaged>
+      </CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv4\ip4_addr.c">
+      <CompileAsManaged>
+      </CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv4\ip4_frag.c">
+      <CompileAsManaged>
+      </CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv6\dhcp6.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv6\ethip6.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv6\icmp6.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv6\inet6.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv6\ip6.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv6\ip6_addr.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv6\ip6_frag.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv6\mld6.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\ipv6\nd6.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\mem.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\memp.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\netif.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\pbuf.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\raw.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\stats.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\sys.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\tcp.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\tcp_in.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\tcp_out.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\timeouts.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lwip\core\udp.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
     <ClCompile Include="Random.cpp" />
-    <ClCompile Include="sio.c" />
-    <ClCompile Include="sys_arch.c" />
+    <ClCompile Include="sio.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="sys_arch.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
     <ClCompile Include="TcpSocket.cpp" />
     <ClCompile Include="Wintun.cpp" />
     <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

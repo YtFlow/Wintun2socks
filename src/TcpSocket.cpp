@@ -5,22 +5,22 @@
 namespace PC = Platform::Collections;
 
 namespace Wintun2socks {
-	PC::UnorderedMap<int, TcpSocket^>^ TcpSocket::m_socketmap = ref new PC::UnorderedMap<int, TcpSocket^>();
+	std::unordered_map<int, TcpSocket^> TcpSocket::m_socketmap;
 
 	err_t(__stdcall TcpSocket::tcp_recv_func) (void* arg, tcp_pcb *tpcb, pbuf *p, err_t err) {
 		TcpSocket^ socket;
-		try {
-			socket = TcpSocket::m_socketmap->Lookup((int)arg);
-			;
-		}
-		catch (Platform::OutOfBoundsException^) {
+		if (TcpSocket::m_socketmap.find((int)arg) == TcpSocket::m_socketmap.end()) {
 			if (p != NULL) {
 				pbuf_free(p);
 			}
 			tcp_abort(tpcb);
 			return ERR_ABRT;
 		}
-		if (!socket) {
+		socket = TcpSocket::m_socketmap[(int)arg];
+		if (socket == nullptr) {
+			if (p != NULL) {
+				pbuf_free(p);
+			}
 			tcp_abort(tpcb);
 			return ERR_ABRT;
 		}
@@ -42,14 +42,12 @@ namespace Wintun2socks {
 			return ERR_ABRT;
 		}
 		TcpSocket^ socket;
-		try {
-			socket = TcpSocket::m_socketmap->Lookup((int)arg);
-		}
-		catch (Platform::OutOfBoundsException^) {
+		if (TcpSocket::m_socketmap.find((int)arg) == TcpSocket::m_socketmap.end()) {
 			tcp_abort(tpcb);
 			return ERR_ABRT;
 		}
-		if (!socket) {
+		socket = TcpSocket::m_socketmap[(int)arg];
+		if (socket == nullptr) {
 			tcp_abort(tpcb);
 			return ERR_ABRT;
 		}
@@ -65,10 +63,12 @@ namespace Wintun2socks {
 	err_t(__stdcall TcpSocket::tcp_err_func) (void *arg, err_t err) {
 		if (arg == NULL) return ERR_OK;
 		TcpSocket^ socket;
-		try {
-			socket = TcpSocket::m_socketmap->Lookup((int)arg);
+
+		if (TcpSocket::m_socketmap.find((int)arg) == TcpSocket::m_socketmap.end()) {
+			return ERR_ABRT;
 		}
-		catch (Platform::OutOfBoundsException^) {
+		socket = TcpSocket::m_socketmap[(int)arg];
+		if (socket == nullptr) {
 			return ERR_ABRT;
 		}
 		socket->SocketError(socket, err);
@@ -89,10 +89,10 @@ namespace Wintun2socks {
 		RemoteAddr = tpcb->local_ip.addr;
 		RemotePort = tpcb->local_port;
 
-		TcpSocket::m_socketmap->Insert(arg, this);
+		TcpSocket::m_socketmap[arg] = this;
 	}
 	void TcpSocket::Deinit() {
-		m_socketmap->Clear();
+		m_socketmap.clear();
 	}
 
 	uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet, bool more)
@@ -134,12 +134,7 @@ namespace Wintun2socks {
 	{
 		if (m_released) return -1;
 		m_released = true;
-		try {
-			TcpSocket::m_socketmap->Remove((int)(m_tcpb->callback_arg));
-		}
-		catch (Platform::OutOfBoundsException^) {
-			;
-		}
+		TcpSocket::m_socketmap.erase((int)(m_tcpb->callback_arg));
 		// tcp_arg(m_tcpb, NULL);
 		tcp_recv(m_tcpb, NULL);
 		tcp_sent(m_tcpb, NULL);
@@ -161,12 +156,7 @@ namespace Wintun2socks {
 		if (m_released) return;
 		m_released = true;
 		int arg = (int)m_tcpb->callback_arg;
-		try {
-			TcpSocket::m_socketmap->Remove((int)arg);
-		}
-		catch (Platform::OutOfBoundsException^) {
-			;
-		};
+		TcpSocket::m_socketmap.erase((int)arg);
 		tcp_arg(m_tcpb, NULL);
 		tcp_recv(m_tcpb, NULL);
 		tcp_sent(m_tcpb, NULL);
@@ -178,7 +168,7 @@ namespace Wintun2socks {
 		this->Close();
 	}
 	unsigned int TcpSocket::ConnectionCount() {
-		return m_socketmap->Size;
+		return m_socketmap.size();
 	}
 	u16_t TcpSocket::SendBufferSize::get() {
 		return tcp_sndbuf(m_tcpb);

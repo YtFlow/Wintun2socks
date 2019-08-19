@@ -6,6 +6,7 @@
 #include <collection.h>
 #include <wrl.h>
 #include <robuffer.h>
+#include <unordered_map>
 
 using namespace Windows::Storage::Streams;
 using namespace Microsoft::WRL;
@@ -27,7 +28,7 @@ namespace Wintun2socks {
 	public ref class TcpSocket sealed : [WFM::DefaultAttribute] ITcpSocket
 	{
 	private:
-		static Platform::Collections::UnorderedMap<int, TcpSocket^>^ TcpSocket::m_socketmap;
+		static std::unordered_map<int, TcpSocket^> TcpSocket::m_socketmap;
 		static err_t(__stdcall TcpSocket::tcp_recv_func) (void* arg, tcp_pcb *tpcb, pbuf *p, err_t err);
 		static err_t(__stdcall TcpSocket::tcp_sent_func) (void* arg, tcp_pcb *tpcb, u16_t len);
 		static err_t(__stdcall TcpSocket::tcp_err_func) (void* arg, err_t err);

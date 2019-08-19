@@ -123,9 +123,9 @@
     <ClInclude Include="lwip\include\lwip\tcpip.h" />
     <ClInclude Include="lwip\include\lwip\timeouts.h" />
     <ClInclude Include="lwip\include\lwip\udp.h" />
-    <ClInclude Include="lwip\include\lwipopts.h" />
     <ClInclude Include="lwip\include\lwip\arch\bpstruct.h" />
     <ClInclude Include="lwip\include\arch\bpstruct.h" />
     <ClInclude Include="NativeBuffer.h" />
+    <ClInclude Include="lwip\include\lwipopts.h" />
   </ItemGroup>
 </Project>

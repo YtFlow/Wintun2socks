@@ -9,6 +9,9 @@ namespace Wintun2socks {
 	netif* Wintun::m_interface = netif_default;
 	tcp_pcb* Wintun::m_listenPCB;
 	udp_pcb* Wintun::m_dnsPCB;
+	const ip4_addr_t m_ip = { 0xC0A80301U };
+	const ip4_addr_t m_dns = { 0x01010101U };
+	const ip4_addr_t m_mask = { 0x00000000U };
 	bool Wintun::running = false;
 	err_t(__stdcall Wintun::outputPCB) (struct netif *netif, struct pbuf *p,
 		const ip4_addr_t *ipaddr) {
@@ -29,9 +32,11 @@ namespace Wintun2socks {
 
 	err_t(Wintun::recvUdp)(void * arg, udp_pcb * pcb, pbuf * p, const ip_addr_t * addr, u16_t port)
 	{
-		auto arr = ref new Platform::Array<uint8, 1u>(p->tot_len);
-		pbuf_copy_partial(p, arr->begin(), p->tot_len, 0);
-		m_instance->DnsPacketPoped(m_instance, arr, addr->addr, port);
+		if (pcb->local_port == 53 && pcb->local_ip.addr == m_dns.addr) {
+			auto arr = ref new Platform::Array<uint8, 1u>(p->tot_len);
+			pbuf_copy_partial(p, arr->begin(), p->tot_len, 0);
+			m_instance->DnsPacketPoped(m_instance, arr, addr->addr, port);
+		}
 		pbuf_free(p);
 		return ERR_OK;
 	}
@@ -50,15 +55,18 @@ namespace Wintun2socks {
 		pcb = tcp_listen_with_backlog(pcb, (UINT)TCP_DEFAULT_LISTEN_BACKLOG);
 		Wintun::m_listenPCB = pcb;
 		tcp_accept(pcb, (tcp_accept_fn)&TcpSocket::tcpAcceptFn);
-		m_interface = netif_list;
+		m_interface = (struct netif *)malloc(sizeof(struct netif));
+		netif_add(m_interface, &m_mask, &m_mask, &m_ip, NULL, NULL, &ip_input);
+		netif_set_up(m_interface);
+		netif_set_link_up(m_interface);
+		netif_set_default(m_interface);
 		m_interface->mtu = 1500;
 		m_interface->output = (netif_output_fn)&Wintun::outputPCB;
+		m_interface->input = &ip_input;
 
 		// UDP pcb for DNS
 		m_dnsPCB = udp_new();
-		ip_addr_t dns_ip;
-		dns_ip.addr = 0x01010101;
-		udp_bind(m_dnsPCB, &dns_ip, 53);
+		udp_bind(m_dnsPCB, &m_dns, 53);
 		udp_recv(m_dnsPCB, (udp_recv_fn)&Wintun::recvUdp, NULL);
 	}
 
@@ -94,8 +102,7 @@ namespace Wintun2socks {
 		auto p = pbuf_alloc(PBUF_TRANSPORT, packet->Length, PBUF_RAM);
 		memcpy_s(p->payload, packet->Length, packet->Data, packet->Length);
 		ip_addr_t ip_dest = { addr };
-		ip_addr_t ip_src = { 0x01010101 };
-		auto ret = udp_sendto_if_src(m_dnsPCB, p, &ip_dest, port, m_interface, &ip_src);
+		auto ret = udp_sendto_if_src(m_dnsPCB, p, &ip_dest, port, m_interface, &m_dns);
 		return ret;
 	}
 }
