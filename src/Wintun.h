@@ -30,9 +30,9 @@ namespace Wintun2socks {
 		static netif* m_interface;
 		static tcp_pcb* m_listenPCB;
 		static udp_pcb* m_dnsPCB;
-		static err_t(__stdcall Wintun::outputPCB) (struct netif *netif, struct pbuf *p,
+		static err_t Wintun::outputPCB (struct netif *netif, struct pbuf *p,
 			const ip4_addr_t *ipaddr);
-		static err_t(__stdcall Wintun::recvUdp) (void *arg, struct udp_pcb *pcb, struct pbuf *p,
+		static err_t Wintun::recvUdp (void *arg, struct udp_pcb *pcb, struct pbuf *p,
 			const ip_addr_t *addr, u16_t port);
 
 	public:

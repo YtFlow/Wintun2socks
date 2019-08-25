@@ -35,7 +35,7 @@
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <WindowsTargetPlatformMinVersion>10.0.15063.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -156,7 +156,7 @@
       <PreprocessorDefinitions>_WINRT_DLL;NODEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAs>CompileAsCpp</CompileAs>
       <CompileAsManaged>false</CompileAsManaged>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -217,6 +217,7 @@
   <ItemGroup>
     <ClInclude Include="lwipcfg_msvc.h" />
     <ClInclude Include="lwip\include\arch\bpstruct.h" />
+    <ClInclude Include="lwip\include\lwipopts.h" />
     <ClInclude Include="lwip\include\lwip\api.h" />
     <ClInclude Include="lwip\include\lwip\arch.h" />
     <ClInclude Include="lwip\include\lwip\arch\bpstruct.h" />
@@ -315,50 +316,34 @@
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="lwip\core\ipv4\autoip.c">
-      <CompileAsManaged>
-      </CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="lwip\core\ipv4\dhcp.c">
-      <CompileAsManaged>
-      </CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="lwip\core\ipv4\etharp.c">
-      <CompileAsManaged>
-      </CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="lwip\core\ipv4\icmp.c">
-      <CompileAsManaged>
-      </CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="lwip\core\ipv4\igmp.c">
-      <CompileAsManaged>
-      </CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="lwip\core\ipv4\ip4.c">
-      <CompileAsManaged>
-      </CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="lwip\core\ipv4\ip4_addr.c">
-      <CompileAsManaged>
-      </CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="lwip\core\ipv4\ip4_frag.c">
-      <CompileAsManaged>
-      </CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>

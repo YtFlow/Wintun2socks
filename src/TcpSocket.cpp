@@ -7,7 +7,7 @@ namespace PC = Platform::Collections;
 namespace Wintun2socks {
 	std::unordered_map<int, TcpSocket^> TcpSocket::m_socketmap;
 
-	err_t(__stdcall TcpSocket::tcp_recv_func) (void* arg, tcp_pcb *tpcb, pbuf *p, err_t err) {
+	err_t TcpSocket::tcp_recv_func (void* arg, tcp_pcb *tpcb, pbuf *p, err_t err) {
 		TcpSocket^ socket;
 		if (TcpSocket::m_socketmap.find((int)arg) == TcpSocket::m_socketmap.end()) {
 			if (p != NULL) {
@@ -36,7 +36,7 @@ namespace Wintun2socks {
 		pbuf_free(p);
 		return ERR_OK;
 	}
-	err_t(__stdcall TcpSocket::tcp_sent_func) (void* arg, tcp_pcb *tpcb, u16_t len) {
+	err_t TcpSocket::tcp_sent_func (void* arg, tcp_pcb *tpcb, u16_t len) {
 		if (arg == NULL) {
 			tcp_abort(tpcb);
 			return ERR_ABRT;
@@ -54,13 +54,13 @@ namespace Wintun2socks {
 		socket->DataSent(socket, len);
 		return ERR_OK;
 	}
-	err_t(__stdcall TcpSocket::tcpAcceptFn) (void *arg, struct tcp_pcb *newpcb, err_t err) {
+	err_t TcpSocket::tcpAcceptFn (void *arg, struct tcp_pcb *newpcb, err_t err) {
 		TcpSocket^ newSocket = ref new TcpSocket(newpcb);
 		TcpSocket::EstablishedTcp(newSocket);
 
 		return ERR_OK;
 	}
-	err_t(__stdcall TcpSocket::tcp_err_func) (void *arg, err_t err) {
+	err_t TcpSocket::tcp_err_func (void *arg, err_t err) {
 		if (arg == NULL) return ERR_OK;
 		TcpSocket^ socket;
 
@@ -97,7 +97,7 @@ namespace Wintun2socks {
 
 	uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet, bool more)
 	{
-		auto flag = TCP_WRITE_FLAG_COPY;
+		auto flag = 0;
 		if (more) {
 			flag |= TCP_WRITE_FLAG_MORE;
 		}

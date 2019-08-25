@@ -29,14 +29,14 @@ namespace Wintun2socks {
 	{
 	private:
 		static std::unordered_map<int, TcpSocket^> TcpSocket::m_socketmap;
-		static err_t(__stdcall TcpSocket::tcp_recv_func) (void* arg, tcp_pcb *tpcb, pbuf *p, err_t err);
-		static err_t(__stdcall TcpSocket::tcp_sent_func) (void* arg, tcp_pcb *tpcb, u16_t len);
-		static err_t(__stdcall TcpSocket::tcp_err_func) (void* arg, err_t err);
+		static err_t TcpSocket::tcp_recv_func (void* arg, tcp_pcb *tpcb, pbuf *p, err_t err);
+		static err_t TcpSocket::tcp_sent_func (void* arg, tcp_pcb *tpcb, u16_t len);
+		static err_t TcpSocket::tcp_err_func (void* arg, err_t err);
 		TcpSocket(tcp_pcb* pcb);
 		tcp_pcb* m_tcpb;
 		bool m_released;
 	internal:
-		static err_t(__stdcall TcpSocket::tcpAcceptFn) (void *arg, struct tcp_pcb *newpcb, err_t err);
+		static err_t TcpSocket::tcpAcceptFn (void *arg, struct tcp_pcb *newpcb, err_t err);
 	public:
 		property u32_t TcpSocket::RemoteAddr;
 		property u16_t TcpSocket::RemotePort;
