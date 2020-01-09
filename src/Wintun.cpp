@@ -9,11 +9,11 @@ namespace Wintun2socks {
 	netif* Wintun::m_interface = netif_default;
 	tcp_pcb* Wintun::m_listenPCB;
 	udp_pcb* Wintun::m_dnsPCB;
-	const ip4_addr_t m_ip = { 0xC0A80301U };
+	// const ip4_addr_t m_ip = { 0xC0A80301U };
 	const ip4_addr_t m_dns = { 0x01010101U };
 	const ip4_addr_t m_mask = { 0x00000000U };
 	bool Wintun::running = false;
-	err_t Wintun::outputPCB (struct netif *netif, struct pbuf *p,
+	err_t Wintun::outputPCB(struct netif *netif, struct pbuf *p,
 		const ip4_addr_t *ipaddr) {
 		if (p == NULL) return ERR_OK;
 		auto arr = ref new Platform::Array<byte, 1>(p->tot_len);
@@ -48,7 +48,7 @@ namespace Wintun2socks {
 		Wintun::m_listenPCB = pcb;
 		tcp_accept(pcb, (tcp_accept_fn)&TcpSocket::tcpAcceptFn);
 		m_interface = (struct netif *)malloc(sizeof(struct netif));
-		netif_add(m_interface, &m_mask, &m_mask, &m_ip, NULL, NULL, &ip_input);
+		netif_add(m_interface, &m_mask, &m_mask, IP_ADDR_ANY, NULL, NULL, &ip_input);
 		netif_set_up(m_interface);
 		netif_set_link_up(m_interface);
 		netif_set_default(m_interface);
@@ -104,5 +104,13 @@ namespace Wintun2socks {
 		auto ret = udp_sendto_if_src(m_dnsPCB, p, &ip_dest, port, m_interface, &m_dns);
 		pbuf_free(p);
 		return ret;
+	}
+}
+
+extern "C" {
+	void handle_assert_error(char * message, int result) {
+		std::string s(message);
+		std::wstring ws(s.begin(), s.end());
+		throw ref new Platform::FailureException(ref new Platform::String(ws.c_str()) + result.ToString());
 	}
 }

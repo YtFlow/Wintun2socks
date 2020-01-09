@@ -1464,8 +1464,8 @@
  * send window while having a small receive window only.
  */
 #if !defined LWIP_WND_SCALE || defined __DOXYGEN__
-#define LWIP_WND_SCALE                  1
-#define TCP_RCV_SCALE                   2
+#define LWIP_WND_SCALE                  0
+#define TCP_RCV_SCALE                   0
 #endif
 
 /**

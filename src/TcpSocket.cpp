@@ -5,18 +5,18 @@
 namespace PC = Platform::Collections;
 
 namespace Wintun2socks {
-	std::unordered_map<int, TcpSocket^> TcpSocket::m_socketmap;
+	std::unordered_map<u16_t, TcpSocket^> TcpSocket::m_socketmap;
 
-	err_t TcpSocket::tcp_recv_func (void* arg, tcp_pcb *tpcb, pbuf *p, err_t err) {
+	err_t TcpSocket::tcp_recv_func(void* arg, tcp_pcb *tpcb, pbuf *p, err_t err) {
 		TcpSocket^ socket;
-		if (TcpSocket::m_socketmap.find((int)arg) == TcpSocket::m_socketmap.end()) {
+		if (TcpSocket::m_socketmap.find(tpcb->remote_port) == TcpSocket::m_socketmap.end()) {
 			if (p != NULL) {
 				pbuf_free(p);
 			}
 			tcp_abort(tpcb);
 			return ERR_ABRT;
 		}
-		socket = TcpSocket::m_socketmap[(int)arg];
+		socket = TcpSocket::m_socketmap[tpcb->remote_port];
 		if (socket == nullptr) {
 			if (p != NULL) {
 				pbuf_free(p);
@@ -36,41 +36,42 @@ namespace Wintun2socks {
 		pbuf_free(p);
 		return ERR_OK;
 	}
-	err_t TcpSocket::tcp_sent_func (void* arg, tcp_pcb *tpcb, u16_t len) {
+	err_t TcpSocket::tcp_sent_func(void* arg, tcp_pcb *tpcb, u16_t len) {
 		if (arg == NULL) {
 			tcp_abort(tpcb);
 			return ERR_ABRT;
 		}
 		TcpSocket^ socket;
-		if (TcpSocket::m_socketmap.find((int)arg) == TcpSocket::m_socketmap.end()) {
+		if (TcpSocket::m_socketmap.find(tpcb->remote_port) == TcpSocket::m_socketmap.end()) {
 			tcp_abort(tpcb);
 			return ERR_ABRT;
 		}
-		socket = TcpSocket::m_socketmap[(int)arg];
+		socket = TcpSocket::m_socketmap[tpcb->remote_port];
 		if (socket == nullptr) {
 			tcp_abort(tpcb);
 			return ERR_ABRT;
 		}
-		socket->DataSent(socket, len);
+		socket->DataSent(socket, len, tcp_sndbuf(tpcb));
 		return ERR_OK;
 	}
-	err_t TcpSocket::tcpAcceptFn (void *arg, struct tcp_pcb *newpcb, err_t err) {
+	err_t TcpSocket::tcpAcceptFn(void *arg, struct tcp_pcb *newpcb, err_t err) {
 		TcpSocket^ newSocket = ref new TcpSocket(newpcb);
 		TcpSocket::EstablishedTcp(newSocket);
 
 		return ERR_OK;
 	}
-	err_t TcpSocket::tcp_err_func (void *arg, err_t err) {
+	err_t TcpSocket::tcp_err_func(void *arg, err_t err) {
 		if (arg == NULL) return ERR_OK;
 		TcpSocket^ socket;
 
-		if (TcpSocket::m_socketmap.find((int)arg) == TcpSocket::m_socketmap.end()) {
-			return ERR_ABRT;
+		if (TcpSocket::m_socketmap.find(*(u16_t*)arg) == TcpSocket::m_socketmap.end()) {
+			return ERR_OK;
 		}
-		socket = TcpSocket::m_socketmap[(int)arg];
+		socket = TcpSocket::m_socketmap[*(u16_t*)arg];
 		if (socket == nullptr) {
-			return ERR_ABRT;
+			return ERR_OK;
 		}
+		socket->m_released = true;
 		socket->SocketError(socket, err);
 		return ERR_OK;
 	}
@@ -78,18 +79,16 @@ namespace Wintun2socks {
 	TcpSocket::TcpSocket(tcp_pcb *tpcb)
 	{
 		m_tcpb = tpcb;
-		// Keep the last bit 1
-		// 0 indicates the tcpb has been freed
-		int arg = Random::Getone() | 0x1;
-		tcp_arg(tpcb, (void*)arg);
 		tcp_recv(tpcb, (tcp_recv_fn)&tcp_recv_func);
 		tcp_sent(tpcb, (tcp_sent_fn)&tcp_sent_func);
 		tcp_err(tpcb, (tcp_err_fn)&tcp_err_func);
+		tcp_arg(tpcb, &(tpcb->remote_port));
+		tcp_nagle_disable(tpcb);
 
 		RemoteAddr = tpcb->local_ip.addr;
 		RemotePort = tpcb->local_port;
 
-		TcpSocket::m_socketmap[arg] = this;
+		TcpSocket::m_socketmap[tpcb->remote_port] = this;
 	}
 	void TcpSocket::Deinit() {
 		m_socketmap.clear();
@@ -97,6 +96,9 @@ namespace Wintun2socks {
 
 	uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet, bool more)
 	{
+		if (m_released) {
+			return ERR_RST;
+		}
 		auto flag = 0;
 		if (more) {
 			flag |= TCP_WRITE_FLAG_MORE;
@@ -134,8 +136,8 @@ namespace Wintun2socks {
 	{
 		if (m_released) return -1;
 		m_released = true;
-		TcpSocket::m_socketmap.erase((int)(m_tcpb->callback_arg));
-		// tcp_arg(m_tcpb, NULL);
+		TcpSocket::m_socketmap.erase(m_tcpb->remote_port);
+		tcp_arg(m_tcpb, NULL);
 		tcp_recv(m_tcpb, NULL);
 		tcp_sent(m_tcpb, NULL);
 		tcp_err(m_tcpb, NULL);
@@ -156,7 +158,7 @@ namespace Wintun2socks {
 		if (m_released) return;
 		m_released = true;
 		int arg = (int)m_tcpb->callback_arg;
-		TcpSocket::m_socketmap.erase((int)arg);
+		TcpSocket::m_socketmap.erase(m_tcpb->remote_port);
 		tcp_arg(m_tcpb, NULL);
 		tcp_recv(m_tcpb, NULL);
 		tcp_sent(m_tcpb, NULL);
@@ -165,7 +167,7 @@ namespace Wintun2socks {
 	}
 	TcpSocket::~TcpSocket()
 	{
-		this->Close();
+		// this->Close();
 	}
 	unsigned int TcpSocket::ConnectionCount() {
 		return m_socketmap.size();

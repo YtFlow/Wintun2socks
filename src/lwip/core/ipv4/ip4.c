@@ -212,6 +212,7 @@ ip4_route(const ip4_addr_t *dest)
   }
 #endif
 #endif /* !LWIP_SINGLE_NETIF */
+  return netif_default;
 
   if ((netif_default == NULL) || !netif_is_up(netif_default) || !netif_is_link_up(netif_default) ||
       ip4_addr_isany_val(*netif_ip4_addr(netif_default)) || ip4_addr_isloopback(dest)) {

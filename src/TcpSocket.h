@@ -17,7 +17,7 @@ namespace Wintun2socks {
 	ref class TcpSocket;
 	public delegate void EstablishedTcpHandler(TcpSocket^ incomingSocket);
 	public delegate void DataReceivedHandler(TcpSocket^ sender, const Platform::Array<uint8, 1>^ bytes);
-	public delegate void DataSentHandler(TcpSocket^ sender, u16_t length);
+	public delegate void DataSentHandler(TcpSocket^ sender, u16_t length, u16_t sendbuf_len);
 	public delegate void SocketErrorHandler(TcpSocket^ sender, signed int err);
 
 	public interface class ITcpSocket {
@@ -28,7 +28,7 @@ namespace Wintun2socks {
 	public ref class TcpSocket sealed : [WFM::DefaultAttribute] ITcpSocket
 	{
 	private:
-		static std::unordered_map<int, TcpSocket^> TcpSocket::m_socketmap;
+		static std::unordered_map<u16_t, TcpSocket^> TcpSocket::m_socketmap;
 		static err_t TcpSocket::tcp_recv_func (void* arg, tcp_pcb *tpcb, pbuf *p, err_t err);
 		static err_t TcpSocket::tcp_sent_func (void* arg, tcp_pcb *tpcb, u16_t len);
 		static err_t TcpSocket::tcp_err_func (void* arg, err_t err);
