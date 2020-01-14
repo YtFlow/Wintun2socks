@@ -1,19 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+    <Filter Include="Resources">
+      <UniqueIdentifier>d4a47252-4ddf-4e45-aedd-70a35dc5eed0</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="pch.cpp" />
-    <ClCompile Include="TcpSocket.cpp" />
-    <ClCompile Include="Wintun.cpp" />
-    <ClCompile Include="Random.cpp" />
-    <ClCompile Include="sio.c" />
-    <ClCompile Include="sys_arch.c" />
     <ClCompile Include="lwip\core\ipv4\autoip.c" />
     <ClCompile Include="lwip\core\ipv4\dhcp.c" />
     <ClCompile Include="lwip\core\ipv4\etharp.c" />
@@ -31,6 +24,9 @@
     <ClCompile Include="lwip\core\ipv6\ip6_frag.c" />
     <ClCompile Include="lwip\core\ipv6\mld6.c" />
     <ClCompile Include="lwip\core\ipv6\nd6.c" />
+    <ClCompile Include="lwip\core\altcp.c" />
+    <ClCompile Include="lwip\core\altcp_alloc.c" />
+    <ClCompile Include="lwip\core\altcp_tcp.c" />
     <ClCompile Include="lwip\core\def.c" />
     <ClCompile Include="lwip\core\dns.c" />
     <ClCompile Include="lwip\core\inet_chksum.c" />
@@ -48,27 +44,38 @@
     <ClCompile Include="lwip\core\tcp_out.c" />
     <ClCompile Include="lwip\core\timeouts.c" />
     <ClCompile Include="lwip\core\udp.c" />
+    <ClCompile Include="Random.cpp" />
+    <ClCompile Include="sio.c" />
+    <ClCompile Include="sys_arch.c" />
+    <ClCompile Include="TcpSocket.cpp" />
+    <ClCompile Include="Wintun.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="TcpSocket.h" />
-    <ClInclude Include="Wintun.h" />
-    <ClInclude Include="Random.h" />
-    <ClInclude Include="lwipcfg_msvc.h" />
+    <ClInclude Include="lwip\include\arch\bpstruct.h" />
+    <ClInclude Include="lwip\include\arch\cc.h" />
+    <ClInclude Include="lwip\include\arch\epstruct.h" />
+    <ClInclude Include="lwip\include\arch\perf.h" />
+    <ClInclude Include="lwip\include\arch\sys_arch.h" />
+    <ClInclude Include="lwip\include\lwip\priv\altcp_priv.h" />
     <ClInclude Include="lwip\include\lwip\priv\api_msg.h" />
+    <ClInclude Include="lwip\include\lwip\priv\mem_priv.h" />
     <ClInclude Include="lwip\include\lwip\priv\memp_priv.h" />
     <ClInclude Include="lwip\include\lwip\priv\memp_std.h" />
     <ClInclude Include="lwip\include\lwip\priv\nd6_priv.h" />
+    <ClInclude Include="lwip\include\lwip\priv\raw_priv.h" />
+    <ClInclude Include="lwip\include\lwip\priv\sockets_priv.h" />
     <ClInclude Include="lwip\include\lwip\priv\tcp_priv.h" />
     <ClInclude Include="lwip\include\lwip\priv\tcpip_priv.h" />
     <ClInclude Include="lwip\include\lwip\prot\autoip.h" />
     <ClInclude Include="lwip\include\lwip\prot\dhcp.h" />
+    <ClInclude Include="lwip\include\lwip\prot\dhcp6.h" />
     <ClInclude Include="lwip\include\lwip\prot\dns.h" />
     <ClInclude Include="lwip\include\lwip\prot\etharp.h" />
     <ClInclude Include="lwip\include\lwip\prot\ethernet.h" />
+    <ClInclude Include="lwip\include\lwip\prot\iana.h" />
     <ClInclude Include="lwip\include\lwip\prot\icmp.h" />
     <ClInclude Include="lwip\include\lwip\prot\icmp6.h" />
+    <ClInclude Include="lwip\include\lwip\prot\ieee.h" />
     <ClInclude Include="lwip\include\lwip\prot\igmp.h" />
     <ClInclude Include="lwip\include\lwip\prot\ip.h" />
     <ClInclude Include="lwip\include\lwip\prot\ip4.h" />
@@ -77,6 +84,9 @@
     <ClInclude Include="lwip\include\lwip\prot\nd6.h" />
     <ClInclude Include="lwip\include\lwip\prot\tcp.h" />
     <ClInclude Include="lwip\include\lwip\prot\udp.h" />
+    <ClInclude Include="lwip\include\lwip\altcp.h" />
+    <ClInclude Include="lwip\include\lwip\altcp_tcp.h" />
+    <ClInclude Include="lwip\include\lwip\altcp_tls.h" />
     <ClInclude Include="lwip\include\lwip\api.h" />
     <ClInclude Include="lwip\include\lwip\arch.h" />
     <ClInclude Include="lwip\include\lwip\autoip.h" />
@@ -91,6 +101,7 @@
     <ClInclude Include="lwip\include\lwip\ethip6.h" />
     <ClInclude Include="lwip\include\lwip\icmp.h" />
     <ClInclude Include="lwip\include\lwip\icmp6.h" />
+    <ClInclude Include="lwip\include\lwip\if_api.h" />
     <ClInclude Include="lwip\include\lwip\igmp.h" />
     <ClInclude Include="lwip\include\lwip\inet.h" />
     <ClInclude Include="lwip\include\lwip\inet_chksum.h" />
@@ -103,6 +114,7 @@
     <ClInclude Include="lwip\include\lwip\ip6.h" />
     <ClInclude Include="lwip\include\lwip\ip6_addr.h" />
     <ClInclude Include="lwip\include\lwip\ip6_frag.h" />
+    <ClInclude Include="lwip\include\lwip\ip6_zone.h" />
     <ClInclude Include="lwip\include\lwip\mem.h" />
     <ClInclude Include="lwip\include\lwip\memp.h" />
     <ClInclude Include="lwip\include\lwip\mld6.h" />
@@ -120,12 +132,15 @@
     <ClInclude Include="lwip\include\lwip\stats.h" />
     <ClInclude Include="lwip\include\lwip\sys.h" />
     <ClInclude Include="lwip\include\lwip\tcp.h" />
+    <ClInclude Include="lwip\include\lwip\tcpbase.h" />
     <ClInclude Include="lwip\include\lwip\tcpip.h" />
     <ClInclude Include="lwip\include\lwip\timeouts.h" />
     <ClInclude Include="lwip\include\lwip\udp.h" />
-    <ClInclude Include="lwip\include\lwip\arch\bpstruct.h" />
-    <ClInclude Include="lwip\include\arch\bpstruct.h" />
-    <ClInclude Include="NativeBuffer.h" />
     <ClInclude Include="lwip\include\lwipopts.h" />
+    <ClInclude Include="lwipcfg_msvc.h" />
+    <ClInclude Include="NativeBuffer.h" />
+    <ClInclude Include="Random.h" />
+    <ClInclude Include="TcpSocket.h" />
+    <ClInclude Include="Wintun.h" />
   </ItemGroup>
 </Project>

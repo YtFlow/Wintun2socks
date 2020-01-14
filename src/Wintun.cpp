@@ -75,6 +75,9 @@ namespace Wintun2socks {
 		return Wintun::m_instance;
 	}
 	uint8 Wintun::PushPacket(const Platform::Array<uint8, 1u>^ packet) {
+		if (packet->Length < 10) {
+			return ERR_OK;
+		}
 		// Check L4 protocol
 		uint8_t proto = packet[9];
 		if (proto != IP_PROTO_TCP && proto != IP_PROTO_UDP) {
