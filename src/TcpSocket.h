@@ -18,12 +18,14 @@ namespace Wintun2socks {
 	public delegate void EstablishedTcpHandler(TcpSocket^ incomingSocket);
 	public delegate void DataReceivedHandler(TcpSocket^ sender, const Platform::Array<uint8, 1>^ bytes);
 	public delegate void DataSentHandler(TcpSocket^ sender, u16_t length, u16_t sendbuf_len);
+	public delegate void RecvFinishedHandler(TcpSocket^ sender);
 	public delegate void SocketErrorHandler(TcpSocket^ sender, signed int err);
 
 	public interface class ITcpSocket {
 		event DataReceivedHandler^ DataReceived;
 		event DataSentHandler^ DataSent;
 		event SocketErrorHandler^ SocketError;
+		event RecvFinishedHandler^ RecvFinished;
 	};
 	public ref class TcpSocket sealed : [WFM::DefaultAttribute] ITcpSocket
 	{
@@ -35,6 +37,7 @@ namespace Wintun2socks {
 		TcpSocket(tcp_pcb* pcb);
 		tcp_pcb* m_tcpb;
 		bool m_released;
+		uint8 TcpSocket::Send(uint8* packet, u16_t len, bool more);
 	internal:
 		static err_t TcpSocket::tcpAcceptFn (void *arg, struct tcp_pcb *newpcb, err_t err);
 	public:
@@ -42,8 +45,10 @@ namespace Wintun2socks {
 		property u16_t TcpSocket::RemotePort;
 		property u16_t TcpSocket::SendBufferSize { u16_t get(); }
 		static void Deinit();
-		uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet, bool flag);
-		uint8 TcpSocket::Send(Windows::Storage::Streams::Buffer^ packet, bool flag);
+		[WFM::DefaultOverload]
+		uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet, u16_t len, bool more);
+		uint8 TcpSocket::Send(IntPtrAbi packet, u16_t len, bool more);
+		uint8 TcpSocket::Send(Windows::Storage::Streams::Buffer^ packet, bool more);
 		void TcpSocket::Recved(u16_t len);
 		uint8 TcpSocket::Output();
 		uint8 TcpSocket::Close();
@@ -51,8 +56,9 @@ namespace Wintun2socks {
 		virtual event DataReceivedHandler^ DataReceived;
 		virtual event DataSentHandler^ DataSent;
 		virtual event SocketErrorHandler^ SocketError;
+		virtual event RecvFinishedHandler^ RecvFinished;
 		static event EstablishedTcpHandler^ EstablishedTcp;
 		virtual ~TcpSocket();
-		static unsigned int ConnectionCount();
+		static size_t ConnectionCount();
 	};
 }

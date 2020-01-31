@@ -49,6 +49,7 @@
     <ClCompile Include="sys_arch.c" />
     <ClCompile Include="TcpSocket.cpp" />
     <ClCompile Include="Wintun.cpp" />
+    <ClCompile Include="pch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lwip\include\arch\bpstruct.h" />
@@ -142,5 +143,6 @@
     <ClInclude Include="Random.h" />
     <ClInclude Include="TcpSocket.h" />
     <ClInclude Include="Wintun.h" />
+    <ClInclude Include="pch.h" />
   </ItemGroup>
 </Project>

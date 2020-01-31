@@ -379,6 +379,7 @@
     <ClInclude Include="lwip\include\lwip\timeouts.h" />
     <ClInclude Include="lwip\include\lwip\udp.h" />
     <ClInclude Include="NativeBuffer.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="TcpSocket.h" />
     <ClInclude Include="Wintun.h" />
@@ -1050,6 +1051,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
+    <ClCompile Include="pch.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="sio.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
