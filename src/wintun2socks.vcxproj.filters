@@ -45,7 +45,6 @@
     <ClCompile Include="lwip\core\timeouts.c" />
     <ClCompile Include="lwip\core\udp.c" />
     <ClCompile Include="Random.cpp" />
-    <ClCompile Include="sio.c" />
     <ClCompile Include="sys_arch.c" />
     <ClCompile Include="TcpSocket.cpp" />
     <ClCompile Include="Wintun.cpp" />

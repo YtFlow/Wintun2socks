@@ -117,6 +117,7 @@ namespace Wintun2socks {
 	}
 	uint8 TcpSocket::Send(Windows::Storage::Streams::Buffer^ packet, bool more)
 	{
+		if (m_released) return ERR_RST;
 		ComPtr<IBufferByteAccess> bufferByteAccess;
 		reinterpret_cast<IInspectable*>(packet)->QueryInterface(IID_PPV_ARGS(&bufferByteAccess));
 		byte* data = nullptr;
@@ -125,9 +126,11 @@ namespace Wintun2socks {
 	}
 
 	void TcpSocket::Recved(u16_t len) {
+		if (m_released) return;
 		tcp_recved(m_tcpb, len);
 	}
 	uint8 TcpSocket::Output() {
+		if (m_released) return ERR_RST;
 		auto ret = tcp_output(m_tcpb);
 		return ret;
 	}
@@ -171,6 +174,7 @@ namespace Wintun2socks {
 		return m_socketmap.size();
 	}
 	u16_t TcpSocket::SendBufferSize::get() {
+		if (m_released) return 0;
 		return tcp_sndbuf(m_tcpb);
 	}
 }

@@ -48,6 +48,9 @@ namespace Wintun2socks {
 		Wintun::m_listenPCB = pcb;
 		tcp_accept(pcb, (tcp_accept_fn)&TcpSocket::tcpAcceptFn);
 		m_interface = (struct netif *)malloc(sizeof(struct netif));
+		if (m_interface == nullptr) {
+			throw ref new Platform::FailureException(L"Cannot initialize a netif");
+		}
 		netif_add(m_interface, &m_mask, &m_mask, IP_ADDR_ANY, NULL, NULL, &ip_input);
 		netif_set_up(m_interface);
 		netif_set_link_up(m_interface);
