@@ -24,7 +24,7 @@ namespace Wintun2socks {
 	{
 		ip_addr_t localIpAddr = { localAddr };
 		udp_connect(pcb, &localIpAddr, localPort);
-		udp_recv(pcb, udp_recv_func, nullptr);
+		udp_recv(pcb, udp_recv_func, (void*)localPort);
 
 		RemoteAddr = pcb->local_ip.addr;
 		RemotePort = pcb->local_port;
@@ -72,6 +72,7 @@ namespace Wintun2socks {
 	{
 		if (m_closed) return;
 		m_closed = true;
+		m_socketmap.erase(pcb->remote_port);
 		udp_disconnect(pcb);
 		udp_remove(pcb);
 	}
