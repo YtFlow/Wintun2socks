@@ -5,6 +5,7 @@
 #include "lwip\udp.h"
 #include "pch.h"
 #include "TcpSocket.h"
+#include "UdpSocket.h"
 #include "NativeBuffer.h"
 
 namespace WFM = Windows::Foundation::Metadata;
@@ -29,7 +30,7 @@ namespace Wintun2socks {
 		static Wintun^ m_instance;
 		static netif* m_interface;
 		static tcp_pcb* m_listenPCB;
-		static udp_pcb* m_dnsPCB;
+		static udp_pcb* m_udpPCB;
 		static err_t Wintun::outputPCB (struct netif *netif, struct pbuf *p,
 			const ip4_addr_t *ipaddr);
 		static err_t Wintun::recvUdp (void *arg, struct udp_pcb *pcb, struct pbuf *p,

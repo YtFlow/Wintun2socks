@@ -49,6 +49,7 @@
     <ClCompile Include="TcpSocket.cpp" />
     <ClCompile Include="Wintun.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="UdpSocket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lwip\include\arch\bpstruct.h" />
@@ -143,5 +144,6 @@
     <ClInclude Include="TcpSocket.h" />
     <ClInclude Include="Wintun.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="UdpSocket.h" />
   </ItemGroup>
 </Project>
