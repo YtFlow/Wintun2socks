@@ -693,23 +693,32 @@ udp_sendto_if_chksum(struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *dst_i
 #endif /* LWIP_CHECKSUM_ON_COPY && CHECKSUM_GEN_UDP */
 }
 
+/*
+ * Wintun2socks:
+ *
+ * We need to specify both destination and source.
+ */
 /** @ingroup udp_raw
  * Same as @ref udp_sendto_if, but with source address */
 err_t
-udp_sendto_if_src(struct udp_pcb *pcb, struct pbuf *p,
-                  const ip_addr_t *dst_ip, u16_t dst_port, struct netif *netif, const ip_addr_t *src_ip)
+udp_sendto_if_src(struct udp_pcb* pcb, struct pbuf* p,
+    const ip_addr_t* dst_ip, u16_t dst_port, struct netif* netif, const ip_addr_t* src_ip)
 {
 #if LWIP_CHECKSUM_ON_COPY && CHECKSUM_GEN_UDP
-  return udp_sendto_if_src_chksum(pcb, p, dst_ip, dst_port, netif, 0, 0, src_ip);
+    return udp_sendto_if_src_chksum(pcb, p, dst_ip, dst_port, netif, 0, 0, src_ip);
 }
 
 /** Same as udp_sendto_if_src(), but with checksum */
 err_t
-udp_sendto_if_src_chksum(struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *dst_ip,
-                         u16_t dst_port, struct netif *netif, u8_t have_chksum,
-                         u16_t chksum, const ip_addr_t *src_ip)
+udp_sendto_if_src_chksum(struct udp_pcb* pcb, struct pbuf* p, const ip_addr_t* dst_ip,
+    u16_t dst_port, struct netif* netif, u8_t have_chksum,
+    u16_t chksum, const ip_addr_t* src_ip)
 {
 #endif /* LWIP_CHECKSUM_ON_COPY && CHECKSUM_GEN_UDP */
+  return ERR_ARG;
+}
+err_t udp_sendto_if_src_dst(struct pbuf* p, const ip_addr_t* dst_ip,
+    u16_t dst_port, const ip_addr_t* src_ip, u16_t src_port) {
   struct udp_hdr *udphdr;
   err_t err;
   struct pbuf *q; /* q will be sent down the stack */
@@ -718,39 +727,11 @@ udp_sendto_if_src_chksum(struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *d
 
   LWIP_ASSERT_CORE_LOCKED();
 
-  LWIP_ERROR("udp_sendto_if_src: invalid pcb", pcb != NULL, return ERR_ARG);
   LWIP_ERROR("udp_sendto_if_src: invalid pbuf", p != NULL, return ERR_ARG);
   LWIP_ERROR("udp_sendto_if_src: invalid dst_ip", dst_ip != NULL, return ERR_ARG);
   LWIP_ERROR("udp_sendto_if_src: invalid src_ip", src_ip != NULL, return ERR_ARG);
-  LWIP_ERROR("udp_sendto_if_src: invalid netif", netif != NULL, return ERR_ARG);
-
-  if (!IP_ADDR_PCB_VERSION_MATCH(pcb, src_ip) ||
-      !IP_ADDR_PCB_VERSION_MATCH(pcb, dst_ip)) {
-    return ERR_VAL;
-  }
-
-#if LWIP_IPV4 && IP_SOF_BROADCAST
-  /* broadcast filter? */
-  if (!ip_get_option(pcb, SOF_BROADCAST) &&
-#if LWIP_IPV6
-      IP_IS_V4(dst_ip) &&
-#endif /* LWIP_IPV6 */
-      ip_addr_isbroadcast(dst_ip, netif)) {
-    LWIP_DEBUGF(UDP_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-                ("udp_sendto_if: SOF_BROADCAST not enabled on pcb %p\n", (void *)pcb));
-    return ERR_VAL;
-  }
-#endif /* LWIP_IPV4 && IP_SOF_BROADCAST */
-
-  /* if the PCB is not yet bound to a port, bind it here */
-  if (pcb->local_port == 0) {
-    LWIP_DEBUGF(UDP_DEBUG | LWIP_DBG_TRACE, ("udp_send: not yet bound to a port, binding now\n"));
-    err = udp_bind(pcb, &pcb->local_ip, pcb->local_port);
-    if (err != ERR_OK) {
-      LWIP_DEBUGF(UDP_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_LEVEL_SERIOUS, ("udp_send: forced port bind failed\n"));
-      return err;
-    }
-  }
+  LWIP_ERROR("udp_sendto_if_src: invalid dst_port", dst_port != 0, return ERR_ARG);
+  LWIP_ERROR("udp_sendto_if_src: invalid src_port", src_port != 0, return ERR_ARG);
 
   /* packet too large to add a UDP header without causing an overflow? */
   if ((u16_t)(p->tot_len + UDP_HLEN) < p->tot_len) {
@@ -782,77 +763,20 @@ udp_sendto_if_src_chksum(struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *d
               (q->len >= sizeof(struct udp_hdr)));
   /* q now represents the packet to be sent */
   udphdr = (struct udp_hdr *)q->payload;
-  udphdr->src = lwip_htons(pcb->local_port);
+  udphdr->src = lwip_htons(src_port);
   udphdr->dest = lwip_htons(dst_port);
   /* in UDP, 0 checksum means 'no checksum' */
   udphdr->chksum = 0x0000;
 
-  /* Multicast Loop? */
-#if LWIP_MULTICAST_TX_OPTIONS
-  if (((pcb->flags & UDP_FLAGS_MULTICAST_LOOP) != 0) && ip_addr_ismulticast(dst_ip)) {
-    q->flags |= PBUF_FLAG_MCASTLOOP;
-  }
-#endif /* LWIP_MULTICAST_TX_OPTIONS */
-
   LWIP_DEBUGF(UDP_DEBUG, ("udp_send: sending datagram of length %"U16_F"\n", q->tot_len));
 
-#if LWIP_UDPLITE
-  /* UDP Lite protocol? */
-  if (pcb->flags & UDP_FLAGS_UDPLITE) {
-    u16_t chklen, chklen_hdr;
-    LWIP_DEBUGF(UDP_DEBUG, ("udp_send: UDP LITE packet length %"U16_F"\n", q->tot_len));
-    /* set UDP message length in UDP header */
-    chklen_hdr = chklen = pcb->chksum_len_tx;
-    if ((chklen < sizeof(struct udp_hdr)) || (chklen > q->tot_len)) {
-      if (chklen != 0) {
-        LWIP_DEBUGF(UDP_DEBUG, ("udp_send: UDP LITE pcb->chksum_len is illegal: %"U16_F"\n", chklen));
-      }
-      /* For UDP-Lite, checksum length of 0 means checksum
-         over the complete packet. (See RFC 3828 chap. 3.1)
-         At least the UDP-Lite header must be covered by the
-         checksum, therefore, if chksum_len has an illegal
-         value, we generate the checksum over the complete
-         packet to be safe. */
-      chklen_hdr = 0;
-      chklen = q->tot_len;
-    }
-    udphdr->len = lwip_htons(chklen_hdr);
-    /* calculate checksum */
-#if CHECKSUM_GEN_UDP
-    IF__NETIF_CHECKSUM_ENABLED(netif, NETIF_CHECKSUM_GEN_UDP) {
-#if LWIP_CHECKSUM_ON_COPY
-      if (have_chksum) {
-        chklen = UDP_HLEN;
-      }
-#endif /* LWIP_CHECKSUM_ON_COPY */
-      udphdr->chksum = ip_chksum_pseudo_partial(q, IP_PROTO_UDPLITE,
-                       q->tot_len, chklen, src_ip, dst_ip);
-#if LWIP_CHECKSUM_ON_COPY
-      if (have_chksum) {
-        u32_t acc;
-        acc = udphdr->chksum + (u16_t)~(chksum);
-        udphdr->chksum = FOLD_U32T(acc);
-      }
-#endif /* LWIP_CHECKSUM_ON_COPY */
-
-      /* chksum zero must become 0xffff, as zero means 'no checksum' */
-      if (udphdr->chksum == 0x0000) {
-        udphdr->chksum = 0xffff;
-      }
-    }
-#endif /* CHECKSUM_GEN_UDP */
-
-    ip_proto = IP_PROTO_UDPLITE;
-  } else
-#endif /* LWIP_UDPLITE */
-  {      /* UDP */
     LWIP_DEBUGF(UDP_DEBUG, ("udp_send: UDP packet length %"U16_F"\n", q->tot_len));
     udphdr->len = lwip_htons(q->tot_len);
     /* calculate checksum */
 #if CHECKSUM_GEN_UDP
     IF__NETIF_CHECKSUM_ENABLED(netif, NETIF_CHECKSUM_GEN_UDP) {
       /* Checksum is mandatory over IPv6. */
-      if (IP_IS_V6(dst_ip) || (pcb->flags & UDP_FLAGS_NOCHKSUM) == 0) {
+      if (IP_IS_V6(dst_ip) == 0) {
         u16_t udpchksum;
 #if LWIP_CHECKSUM_ON_COPY
         if (have_chksum) {
@@ -877,20 +801,14 @@ udp_sendto_if_src_chksum(struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *d
     }
 #endif /* CHECKSUM_GEN_UDP */
     ip_proto = IP_PROTO_UDP;
-  }
 
   /* Determine TTL to use */
-#if LWIP_MULTICAST_TX_OPTIONS
-  ttl = (ip_addr_ismulticast(dst_ip) ? udp_get_multicast_ttl(pcb) : pcb->ttl);
-#else /* LWIP_MULTICAST_TX_OPTIONS */
-  ttl = pcb->ttl;
-#endif /* LWIP_MULTICAST_TX_OPTIONS */
+  ttl = UDP_TTL;
 
   LWIP_DEBUGF(UDP_DEBUG, ("udp_send: UDP checksum 0x%04"X16_F"\n", udphdr->chksum));
   LWIP_DEBUGF(UDP_DEBUG, ("udp_send: ip_output_if (,,,,0x%02"X16_F",)\n", (u16_t)ip_proto));
   /* output to IP */
-  NETIF_SET_HINTS(netif, &(pcb->netif_hints));
-  err = ip_output_if_src(q, src_ip, dst_ip, ttl, pcb->tos, ip_proto, netif);
+  err = ip_output(q, src_ip, dst_ip, ttl, 0, ip_proto);
   NETIF_RESET_HINTS(netif);
 
   /* @todo: must this be increased even if error occurred? */

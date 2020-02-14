@@ -133,6 +133,11 @@ err_t            udp_sendto_if  (struct udp_pcb *pcb, struct pbuf *p,
 err_t            udp_sendto_if_src(struct udp_pcb *pcb, struct pbuf *p,
                                  const ip_addr_t *dst_ip, u16_t dst_port,
                                  struct netif *netif, const ip_addr_t *src_ip);
+/**
+ * Wintun2socks:
+ */
+err_t            udp_sendto_if_src_dst(struct pbuf* p, const ip_addr_t* dst_ip,
+                                 u16_t dst_port, const ip_addr_t* src_ip, u16_t src_port);
 err_t            udp_sendto     (struct udp_pcb *pcb, struct pbuf *p,
                                  const ip_addr_t *dst_ip, u16_t dst_port);
 err_t            udp_send       (struct udp_pcb *pcb, struct pbuf *p);

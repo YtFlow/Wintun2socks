@@ -382,7 +382,6 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="TcpSocket.h" />
-    <ClInclude Include="UdpSocket.h" />
     <ClInclude Include="Wintun.h" />
   </ItemGroup>
   <ItemGroup>
@@ -1073,7 +1072,6 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="TcpSocket.cpp" />
-    <ClCompile Include="UdpSocket.cpp" />
     <ClCompile Include="Wintun.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
