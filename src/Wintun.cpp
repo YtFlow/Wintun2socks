@@ -7,7 +7,7 @@ using namespace concurrency;
 namespace Wintun2socks {
 	Wintun^ Wintun::m_instance = ref new Wintun();
 	netif* Wintun::m_interface = netif_default;
-	tcp_pcb* Wintun::m_listenPCB;
+	tcp_pcb* Wintun::m_listenPCB = nullptr;
 	const ip4_addr_t m_ip = { 0xC0A80301U };
 	const ip4_addr_t m_mask = { 0x00000000U };
 	bool Wintun::running = false;
@@ -26,31 +26,33 @@ namespace Wintun2socks {
 			return;
 		}
 		running = true;
-		lwip_init();
+		if (m_listenPCB == nullptr) {
+			lwip_init();
 
-		// add a listening pcb for TCP
-		auto pcb = tcp_new();
-		auto addr = ip_addr_any;
-		tcp_bind(pcb, &addr, 0);
-		pcb = tcp_listen_with_backlog(pcb, (UINT)TCP_DEFAULT_LISTEN_BACKLOG);
-		Wintun::m_listenPCB = pcb;
-		tcp_accept(pcb, (tcp_accept_fn)&TcpSocket::tcpAcceptFn);
-		m_interface = (struct netif*)malloc(sizeof(struct netif));
-		if (m_interface == nullptr) {
-			throw ref new Platform::FailureException(L"Cannot initialize a netif");
+			// add a listening pcb for TCP
+			auto pcb = tcp_new();
+			auto addr = ip_addr_any;
+			tcp_bind(pcb, &addr, 0);
+			pcb = tcp_listen_with_backlog(pcb, (UINT)TCP_DEFAULT_LISTEN_BACKLOG);
+			Wintun::m_listenPCB = pcb;
+			tcp_accept(pcb, (tcp_accept_fn)&TcpSocket::tcpAcceptFn);
+			m_interface = (struct netif*)malloc(sizeof(struct netif));
+			if (m_interface == nullptr) {
+				throw ref new Platform::FailureException(L"Cannot initialize a netif");
+			}
+			netif_add(m_interface, &m_mask, &m_mask, IP_ADDR_ANY, NULL, NULL, &ip_input);
+			netif_set_up(m_interface);
+			netif_set_link_up(m_interface);
+			netif_set_default(m_interface);
+			m_interface->mtu = 1500;
+			m_interface->output = (netif_output_fn)&Wintun::outputPCB;
+			m_interface->input = &ip_input;
 		}
-		netif_add(m_interface, &m_mask, &m_mask, IP_ADDR_ANY, NULL, NULL, &ip_input);
-		netif_set_up(m_interface);
-		netif_set_link_up(m_interface);
-		netif_set_default(m_interface);
-		m_interface->mtu = 1500;
-		m_interface->output = (netif_output_fn)&Wintun::outputPCB;
-		m_interface->input = &ip_input;
 	}
 
 	void Wintun::Deinit() {
 		TcpSocket::Deinit();
-		tcp_close(m_listenPCB);
+		// tcp_close(m_listenPCB);
 	}
 
 	void Wintun::CheckTimeout()
