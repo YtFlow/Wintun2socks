@@ -76,9 +76,21 @@ namespace Wintun2socks {
 		auto ret = m_interface->input(p, m_interface);
 		return ret;
 	}
-	uint8 Wintun::PushDnsPayload(u32_t addr, uint16 port, const Platform::Array<uint8, 1>^ data)
+	uint8 Wintun::PushDnsPayload(u32_t addr, uint16 port, IBuffer^ data)
 	{
-		return PushUdpPayload(DNS_ADDRESS, DNS_PORT, addr, port, (IntPtrAbi)data->Data, (uint16)data->Length);
+		// Query the IBufferByteAccess interface.
+		ComPtr<IBufferByteAccess> bufferByteAccess;
+		HRESULT hresult;
+		if (FAILED((hresult = reinterpret_cast<IInspectable*>(data)->QueryInterface(IID_PPV_ARGS(&bufferByteAccess))))) {
+			throw Platform::COMException::CreateException(hresult);
+		}
+
+		// Retrieve the buffer data.
+		byte* ptr = nullptr;
+		if (FAILED((hresult = bufferByteAccess->Buffer(&ptr)))) {
+			throw Platform::COMException::CreateException(hresult);
+		}
+		return PushUdpPayload(DNS_ADDRESS, DNS_PORT, addr, port, (IntPtrAbi)ptr, (uint16)data->Length);
 	}
 	uint8 Wintun::PushUdpPayload(u32_t src_addr, uint16 src_port, u32_t dst_addr, uint16 dst_port, IntPtrAbi packet, uint16 packetLen)
 	{

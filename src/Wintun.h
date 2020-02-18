@@ -17,7 +17,7 @@ namespace Wintun2socks {
 		void Init();
 		void Deinit();
 		void CheckTimeout();
-		uint8 PushDnsPayload(u32_t addr, uint16 port, const Platform::Array<uint8, 1>^ data);
+		uint8 PushDnsPayload(u32_t addr, uint16 port, IBuffer^ data);
 		uint8 PushUdpPayload(u32_t src_addr, uint16 src_port, u32_t dst_addr, uint16 dst_port, IntPtrAbi packet, uint16 packetLen);
 		uint8 PushPacket(const Platform::Array<uint8, 1u>^ packet);
 	};
@@ -39,7 +39,7 @@ namespace Wintun2socks {
 		virtual void Deinit();
 		virtual void CheckTimeout();
 		virtual uint8 PushPacket(const Platform::Array<uint8, 1u>^ packet);
-		virtual uint8 PushDnsPayload(u32_t addr, uint16 port, const Platform::Array<uint8, 1>^ data);
+		virtual uint8 PushDnsPayload(u32_t addr, uint16 port, IBuffer^ data);
 		virtual uint8 PushUdpPayload(u32_t src_addr, uint16 src_port, u32_t dst_addr, uint16 dst_port, IntPtrAbi packet, uint16 packetLen);
 		virtual event PacketPopedHandler^ PacketPoped;
 	};
