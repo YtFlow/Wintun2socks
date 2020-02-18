@@ -134,7 +134,7 @@ namespace Wintun2socks {
 		auto ret = tcp_output(m_tcpb);
 		return ret;
 	}
-	uint8 TcpSocket::Close()
+	uint8 TcpSocket::Shutdown()
 	{
 		if (m_released) return -1;
 		m_released = true;

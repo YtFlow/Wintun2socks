@@ -51,7 +51,7 @@ namespace Wintun2socks {
 		uint8 TcpSocket::Send(Windows::Storage::Streams::Buffer^ packet, bool more);
 		void TcpSocket::Recved(u16_t len);
 		uint8 TcpSocket::Output();
-		uint8 TcpSocket::Close();
+		uint8 TcpSocket::Shutdown();
 		void TcpSocket::Abort();
 		virtual event DataReceivedHandler^ DataReceived;
 		virtual event DataSentHandler^ DataSent;
