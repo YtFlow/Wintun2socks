@@ -1,46 +1,45 @@
-﻿#pragma once
+#pragma once
+#include "pch.h"
+#include "Wintun.g.h"
 #include "lwip\init.h"
+#include "lwip\netif.h"
 #include "lwip\timeouts.h"
+#include "lwip\ip.h"
 #include "lwip\tcp.h"
 #include "lwip\udp.h"
-#include "pch.h"
+#include "winrt/Windows.Storage.Streams.h"
 #include "TcpSocket.h"
-#include "NativeBuffer.h"
 
-namespace WFM = Windows::Foundation::Metadata;
+namespace winrt::Wintun2socks::implementation
+{
+    struct Wintun : WintunT<Wintun>
+    {
+    private:
+        const uint32_t DNS_ADDRESS = 0x01010101U;
+        const uint16_t DNS_PORT = 53;
+        static winrt::com_ptr<Wintun> m_instance;
+        static netif* m_interface;
+        static tcp_pcb* m_listenPCB;
+        static err_t Wintun::outputPCB (struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr);
+        winrt::event<PacketPopedHandler> m_packetPoped;
 
-namespace Wintun2socks {
-	public delegate void PacketPopedHandler(Platform::Object^ sender, const Platform::Array<uint8, 1>^ e);
-	ref class Wintun;
-	public interface class IWintun {
-		event PacketPopedHandler^ PacketPoped;
-		void Init();
-		void Deinit();
-		void CheckTimeout();
-		uint8 PushDnsPayload(u32_t addr, uint16 port, IBuffer^ data);
-		uint8 PushUdpPayload(u32_t src_addr, uint16 src_port, u32_t dst_addr, uint16 dst_port, IntPtrAbi packet, uint16 packetLen);
-		uint8 PushPacket(const Platform::Array<uint8, 1u>^ packet);
-	};
-	public ref class Wintun sealed: [WFM::DefaultAttribute] IWintun
-	{
-	private:
-		static bool running;
-		static Wintun^ m_instance;
-		static netif* m_interface;
-		static tcp_pcb* m_listenPCB;
-		static err_t Wintun::outputPCB (struct netif *netif, struct pbuf *p,
-			const ip4_addr_t *ipaddr);
-        const uint32 DNS_ADDRESS = 0x01010101U;
-        const uint16 DNS_PORT = 53;
+    public:
+        Wintun() = default;
 
-	public:
-		static property Wintun^ Instance { Wintun^ get(); };
-		virtual void Init();
-		virtual void Deinit();
-		virtual void CheckTimeout();
-		virtual uint8 PushPacket(const Platform::Array<uint8, 1u>^ packet);
-		virtual uint8 PushDnsPayload(u32_t addr, uint16 port, IBuffer^ data);
-		virtual uint8 PushUdpPayload(u32_t src_addr, uint16 src_port, u32_t dst_addr, uint16 dst_port, IntPtrAbi packet, uint16 packetLen);
-		virtual event PacketPopedHandler^ PacketPoped;
-	};
+        static Wintun2socks::Wintun Instance();
+        void Init();
+        void Deinit();
+        void CheckTimeout();
+        uint8_t PushPacket(array_view<uint8_t const> packet);
+        uint8_t PushDnsPayload(uint32_t addr, uint16_t port, Windows::Storage::Streams::IBuffer const& data);
+        uint8_t PushUdpPayload(uint32_t src_addr, uint16_t src_port, uint32_t dst_addr, uint16_t dst_port, uint64_t packet, uint16_t packetLen);
+        winrt::event_token PacketPoped(Wintun2socks::PacketPopedHandler const& handler);
+        void PacketPoped(winrt::event_token const& token) noexcept;
+    };
+}
+namespace winrt::Wintun2socks::factory_implementation
+{
+    struct Wintun : WintunT<Wintun, implementation::Wintun>
+    {
+    };
 }

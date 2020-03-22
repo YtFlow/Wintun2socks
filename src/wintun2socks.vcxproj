@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.200316.3\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.200316.3\build\native\Microsoft.Windows.CppWinRT.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
       <Configuration>Debug</Configuration>
@@ -37,7 +38,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{354c56b0-57a7-42c8-ba52-baa188c861e5}</ProjectGuid>
     <Keyword>WindowsRuntimeComponent</Keyword>
-    <RootNamespace>wintun2socks</RootNamespace>
+    <RootNamespace>Wintun2socks</RootNamespace>
     <DefaultLanguage>zh-CN</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
@@ -45,6 +46,9 @@
     <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.15063.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <CppWinRTOptimized>true</CppWinRTOptimized>
+    <CppWinRTGenerateWindowsMetadata>true</CppWinRTGenerateWindowsMetadata>
+    <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -163,12 +167,15 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>vccorlibd;msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <AdditionalDependencies>vccorlibd.lib;msvcrtd.lib;WindowsApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <ModuleDefinitionFile>wintun2socks.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -180,12 +187,15 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>vccorlib;msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <AdditionalDependencies>vccorlib.lib;msvcrt.lib;WindowsApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <ModuleDefinitionFile>wintun2socks.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -197,12 +207,15 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>vccorlibd;msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <AdditionalDependencies>vccorlibd.lib;msvcrtd.lib;WindowsApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <ModuleDefinitionFile>wintun2socks.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -214,12 +227,15 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>vccorlib;msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <AdditionalDependencies>vccorlib.lib;msvcrt.lib;WindowsApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <ModuleDefinitionFile>wintun2socks.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -231,12 +247,15 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>vccorlibd;msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <AdditionalDependencies>vccorlibd.lib;msvcrtd.lib;WindowsApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <ModuleDefinitionFile>wintun2socks.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -248,12 +267,15 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>vccorlib;msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <AdditionalDependencies>vccorlib.lib;msvcrt.lib;WindowsApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <ModuleDefinitionFile>wintun2socks.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -265,12 +287,15 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>vccorlibd;msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <AdditionalDependencies>vccorlibd.lib;msvcrtd.lib;WindowsApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <ModuleDefinitionFile>wintun2socks.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -282,12 +307,15 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>vccorlib;msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <AdditionalDependencies>vccorlib.lib;msvcrt.lib;WindowsApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <ModuleDefinitionFile>wintun2socks.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -380,7 +408,6 @@
     <ClInclude Include="lwip\include\lwip\udp.h" />
     <ClInclude Include="NativeBuffer.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Random.h" />
     <ClInclude Include="TcpSocket.h" />
     <ClInclude Include="Wintun.h" />
   </ItemGroup>
@@ -1051,8 +1078,8 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
+    <ClCompile Include="module.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="Random.cpp" />
     <ClCompile Include="sys_arch.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
@@ -1074,7 +1101,23 @@
     <ClCompile Include="TcpSocket.cpp" />
     <ClCompile Include="Wintun.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="wintun2socks.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="TcpSocket.idl" />
+    <Midl Include="Wintun.idl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.200316.3\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.200316.3\build\native\Microsoft.Windows.CppWinRT.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.200316.3\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.200316.3\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.200316.3\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.200316.3\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+  </Target>
 </Project>

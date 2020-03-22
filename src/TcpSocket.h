@@ -1,64 +1,55 @@
 #pragma once
-#include "pch.h"
-#include "lwip\init.h"
+#include "TcpSocket.g.h"
+#include "lwip\err.h"
 #include "lwip\tcp.h"
-#include "Random.h"
-#include <collection.h>
-#include <wrl.h>
-#include <robuffer.h>
-#include <unordered_map>
 
-using namespace Windows::Storage::Streams;
-using namespace Microsoft::WRL;
+namespace winrt::Wintun2socks::implementation
+{
+    struct TcpSocket : TcpSocketT<TcpSocket>
+    {
+    private:
+        static std::unordered_map<uint16_t, winrt::com_ptr<winrt::Wintun2socks::implementation::TcpSocket>> m_socketmap;
+        static err_t tcp_recv_func(void* arg, tcp_pcb *tpcb, pbuf *p, err_t err);
+        static err_t tcp_sent_func(void* arg, tcp_pcb *tpcb, uint16_t len);
+        static err_t tcp_err_func(void* arg, err_t err);
+        tcp_pcb* m_tcpb;
+        bool m_released = false;
+        uint8_t Send(uint8_t* packet, uint16_t len, bool more);
+        winrt::event<DataReceivedHandler> m_dataReceived;
+        winrt::event<DataSentHandler> m_dataSent;
+        winrt::event<SocketErrorHandler> m_socketError;
+        winrt::event<RecvFinishedHandler> m_recvFinished;
+    public:
+        TcpSocket(tcp_pcb* pcb);
 
-namespace WFM = Windows::Foundation::Metadata;
+        static winrt::event<EstablishedTcpHandler> m_establishedTcp;
+        static winrt::event_token EstablishedTcp(Wintun2socks::EstablishedTcpHandler const& handler);
+        static void EstablishedTcp(winrt::event_token const& token) noexcept;
+        static uint32_t ConnectionCount() noexcept;
+        static void Deinit() noexcept;
+        uint32_t RemoteAddr();
+        uint16_t RemotePort();
+        uint16_t SendBufferSize();
+        uint8_t Send(uint64_t packet, uint16_t len, bool more);
+        void Recved(uint16_t len);
+        uint8_t Output();
+        uint8_t Shutdown();
+        void Abort();
+        winrt::event_token DataReceived(Wintun2socks::DataReceivedHandler const& handler);
+        void DataReceived(winrt::event_token const& token) noexcept;
+        winrt::event_token DataSent(Wintun2socks::DataSentHandler const& handler);
+        void DataSent(winrt::event_token const& token) noexcept;
+        winrt::event_token SocketError(Wintun2socks::SocketErrorHandler const& handler);
+        void SocketError(winrt::event_token const& token) noexcept;
+        winrt::event_token RecvFinished(Wintun2socks::RecvFinishedHandler const& handler);
+        void RecvFinished(winrt::event_token const& token) noexcept;
 
-namespace Wintun2socks {
-	ref class TcpSocket;
-	public delegate void EstablishedTcpHandler(TcpSocket^ incomingSocket);
-	public delegate void DataReceivedHandler(TcpSocket^ sender, const Platform::Array<uint8, 1>^ bytes);
-	public delegate void DataSentHandler(TcpSocket^ sender, u16_t length, u16_t sendbuf_len);
-	public delegate void RecvFinishedHandler(TcpSocket^ sender);
-	public delegate void SocketErrorHandler(TcpSocket^ sender, signed int err);
-
-	public interface class ITcpSocket {
-		event DataReceivedHandler^ DataReceived;
-		event DataSentHandler^ DataSent;
-		event SocketErrorHandler^ SocketError;
-		event RecvFinishedHandler^ RecvFinished;
-	};
-	public ref class TcpSocket sealed : [WFM::DefaultAttribute] ITcpSocket
-	{
-	private:
-		static std::unordered_map<u16_t, TcpSocket^> TcpSocket::m_socketmap;
-		static err_t TcpSocket::tcp_recv_func (void* arg, tcp_pcb *tpcb, pbuf *p, err_t err);
-		static err_t TcpSocket::tcp_sent_func (void* arg, tcp_pcb *tpcb, u16_t len);
-		static err_t TcpSocket::tcp_err_func (void* arg, err_t err);
-		TcpSocket(tcp_pcb* pcb);
-		tcp_pcb* m_tcpb;
-		bool m_released;
-		uint8 TcpSocket::Send(uint8* packet, u16_t len, bool more);
-	internal:
-		static err_t TcpSocket::tcpAcceptFn (void *arg, struct tcp_pcb *newpcb, err_t err);
-	public:
-		property u32_t TcpSocket::RemoteAddr;
-		property u16_t TcpSocket::RemotePort;
-		property u16_t TcpSocket::SendBufferSize { u16_t get(); }
-		static void Deinit();
-		[WFM::DefaultOverload]
-		uint8 TcpSocket::Send(const Platform::Array<uint8, 1u>^ packet, u16_t len, bool more);
-		uint8 TcpSocket::Send(IntPtrAbi packet, u16_t len, bool more);
-		uint8 TcpSocket::Send(Windows::Storage::Streams::Buffer^ packet, bool more);
-		void TcpSocket::Recved(u16_t len);
-		uint8 TcpSocket::Output();
-		uint8 TcpSocket::Shutdown();
-		void TcpSocket::Abort();
-		virtual event DataReceivedHandler^ DataReceived;
-		virtual event DataSentHandler^ DataSent;
-		virtual event SocketErrorHandler^ SocketError;
-		virtual event RecvFinishedHandler^ RecvFinished;
-		static event EstablishedTcpHandler^ EstablishedTcp;
-		virtual ~TcpSocket();
-		static size_t ConnectionCount();
-	};
+        virtual ~TcpSocket();
+    };
+}
+namespace winrt::Wintun2socks::factory_implementation
+{
+    struct TcpSocket : TcpSocketT<TcpSocket, implementation::TcpSocket>
+    {
+    };
 }

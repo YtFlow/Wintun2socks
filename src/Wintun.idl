@@ -1,0 +1,15 @@
+namespace Wintun2socks
+{
+	delegate void PacketPopedHandler(Wintun sender, UInt8[] e);
+	runtimeclass Wintun
+	{
+		static Wintun Instance { get; };
+		void Init();
+		void Deinit();
+		void CheckTimeout();
+		UInt8 PushPacket(UInt8[] packet);
+		UInt8 PushDnsPayload(UInt32 addr, UInt16 port, Windows.Storage.Streams.IBuffer data);
+		UInt8 PushUdpPayload(UInt32 src_addr, UInt16 src_port, UInt32 dst_addr, UInt16 dst_port, UInt64 packet, UInt16 packetLen);
+		event PacketPopedHandler PacketPoped;
+	}
+}

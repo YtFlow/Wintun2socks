@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include <collection.h>
-#include <ppltasks.h>
+#include <cinttypes>
+#include <Windows.h>
 
 #ifdef _WIN64
-typedef int64 IntPtrAbi;
+typedef int64_t IntPtrAbi;
 #else
-typedef int32 IntPtrAbi;
+typedef int32_t IntPtrAbi;
 #endif

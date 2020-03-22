@@ -1,0 +1,29 @@
+namespace Wintun2socks
+{
+	delegate void EstablishedTcpHandler(TcpSocket incomingSocket);
+	delegate void DataReceivedHandler(TcpSocket sender, UInt8[] bytes);
+	delegate void DataSentHandler(TcpSocket sender, UInt16 length, UInt16 sendbuf_len);
+	delegate void RecvFinishedHandler(TcpSocket sender);
+	delegate void SocketErrorHandler(TcpSocket sender, Int32 err);
+	runtimeclass TcpSocket
+	{
+		UInt32 RemoteAddr { get; };
+		UInt16 RemotePort{ get; };
+		UInt16 SendBufferSize{ get; };
+		// UInt8 Send(UInt8[] packet, UInt16 len, Boolean more);
+		[default_overload]
+		UInt8 Send(UInt64 packet, UInt16 len, Boolean more);
+		// UInt8 Send(Windows.Storage.Streams.IBuffer packet, Boolean more);
+		void Recved(UInt16 len);
+		UInt8 Output();
+		UInt8 Shutdown();
+		void Abort();
+		event DataReceivedHandler DataReceived;
+		event DataSentHandler DataSent;
+		event SocketErrorHandler SocketError;
+		event RecvFinishedHandler RecvFinished;
+		static event EstablishedTcpHandler EstablishedTcp;
+		static UInt32 ConnectionCount();
+		static void Deinit();
+	}
+}

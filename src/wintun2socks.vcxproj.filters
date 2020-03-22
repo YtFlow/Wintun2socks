@@ -44,11 +44,11 @@
     <ClCompile Include="lwip\core\tcp_out.c" />
     <ClCompile Include="lwip\core\timeouts.c" />
     <ClCompile Include="lwip\core\udp.c" />
-    <ClCompile Include="Random.cpp" />
     <ClCompile Include="sys_arch.c" />
-    <ClCompile Include="TcpSocket.cpp" />
-    <ClCompile Include="Wintun.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="TcpSocket.cpp" />
+    <ClCompile Include="module.cpp" />
+    <ClCompile Include="Wintun.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lwip\include\arch\bpstruct.h" />
@@ -138,10 +138,17 @@
     <ClInclude Include="lwip\include\lwip\udp.h" />
     <ClInclude Include="lwip\include\lwipopts.h" />
     <ClInclude Include="lwipcfg_msvc.h" />
-    <ClInclude Include="Random.h" />
-    <ClInclude Include="TcpSocket.h" />
-    <ClInclude Include="Wintun.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="NativeBuffer.h" />
+    <ClInclude Include="TcpSocket.h" />
+    <ClInclude Include="Wintun.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="wintun2socks.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="Wintun.idl" />
+    <Midl Include="TcpSocket.idl" />
   </ItemGroup>
 </Project>
